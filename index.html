@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Home Buying & Renovation Tracker</title>
 <style>
-    body { font-family: Arial, sans-serif; margin:0; display:flex; }
-    nav { width:250px; background:#2c3e50; color:white; height:100vh; padding-top:20px; }
-    nav h2 { text-align:center; margin-bottom:20px; }
-    nav a { display:block; padding:10px 20px; color:white; text-decoration:none; }
-    nav a:hover { background:#34495e; }
-    main { flex:1; padding:20px; }
+    body { font-family: Arial, sans-serif; margin:0; display:flex; background: #f0f8ff; }
+    nav { width:180px; background:#ff6f61; color:white; height:100vh; padding-top:20px; }
+    nav h2 { text-align:center; margin-bottom:20px; font-size:1.4em; }
+    nav a { display:block; padding:12px 15px; color:white; text-decoration:none; font-size:1.1em; }
+    nav a:hover { background:#ff8a75; }
+    main { flex:1; padding:25px; font-size:1.1em; }
     section { display:none; }
     section.active { display:block; }
-    .task { margin-bottom:15px; }
-    .task input[type='checkbox'] { margin-right:10px; }
-    .info-btn { background:#3498db; color:white; border:none; padding:2px 6px; border-radius:50%; cursor:pointer; margin-left:5px; }
-    .timeline { margin:20px 0; display:flex; justify-content:space-between; }
-    .timeline div { width:20px; height:20px; border-radius:50%; background:#bdc3c7; text-align:center; line-height:20px; color:white; }
+    .task { margin-bottom:20px; }
+    .task input[type='checkbox'] { margin-right:12px; transform:scale(1.2); }
+    .info-btn { background:#ffd700; color:#333; border:none; padding:3px 7px; border-radius:50%; cursor:pointer; margin-left:8px; font-weight:bold; }
+    .timeline { margin:25px 0; display:flex; justify-content:space-between; }
+    .timeline div { width:25px; height:25px; border-radius:50%; background:#ffcccb; text-align:center; line-height:25px; color:white; font-weight:bold; }
     .timeline div.completed { background:#2ecc71; }
 </style>
 </head>
@@ -34,7 +34,6 @@
 </nav>
 
 <main>
-    <!-- Finance Prep -->
     <section id="finance" class="active">
         <h2>Finance Prep</h2>
         <div class="timeline">
@@ -54,7 +53,6 @@
         </div>
     </section>
 
-    <!-- Mortgage -->
     <section id="mortgage">
         <h2>Mortgage</h2>
         <div class="task">
@@ -69,7 +67,6 @@
         </div>
     </section>
 
-    <!-- Viewing & Offer -->
     <section id="viewing">
         <h2>Viewing & Offer</h2>
         <div class="task">
@@ -84,7 +81,6 @@
         </div>
     </section>
 
-    <!-- Solicitor / Conveyancing -->
     <section id="solicitor">
         <h2>Solicitor / Conveyancing</h2>
         <div class="task">
@@ -99,7 +95,6 @@
         </div>
     </section>
 
-    <!-- Completion -->
     <section id="completion">
         <h2>Completion</h2>
         <div class="task">
@@ -114,7 +109,6 @@
         </div>
     </section>
 
-    <!-- Renovation -->
     <section id="renovation">
         <h2>Renovation</h2>
         <div class="task">
