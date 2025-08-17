@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Buying & Renovation Tracker</title>
+<style>
+    body { font-family: Arial, sans-serif; margin:0; display:flex; }
+    nav { width:250px; background:#2c3e50; color:white; height:100vh; padding-top:20px; }
+    nav h2 { text-align:center; margin-bottom:20px; }
+    nav a { display:block; padding:10px 20px; color:white; text-decoration:none; }
+    nav a:hover { background:#34495e; }
+    main { flex:1; padding:20px; }
+    section { display:none; }
+    section.active { display:block; }
+    .task { margin-bottom:15px; }
+    .task input[type='checkbox'] { margin-right:10px; }
+    .info-btn { background:#3498db; color:white; border:none; padding:2px 6px; border-radius:50%; cursor:pointer; margin-left:5px; }
+    .timeline { margin:20px 0; display:flex; justify-content:space-between; }
+    .timeline div { width:20px; height:20px; border-radius:50%; background:#bdc3c7; text-align:center; line-height:20px; color:white; }
+    .timeline div.completed { background:#2ecc71; }
+</style>
+</head>
+<body>
+
+<nav>
+    <h2>Home Tracker</h2>
+    <a href="#" onclick="showSection('finance')">Finance Prep</a>
+    <a href="#" onclick="showSection('mortgage')">Mortgage</a>
+    <a href="#" onclick="showSection('viewing')">Viewing & Offer</a>
+    <a href="#" onclick="showSection('solicitor')">Solicitor / Conveyancing</a>
+    <a href="#" onclick="showSection('completion')">Completion</a>
+    <a href="#" onclick="showSection('renovation')">Renovation</a>
+</nav>
+
+<main>
+    <!-- Finance Prep -->
+    <section id="finance" class="active">
+        <h2>Finance Prep</h2>
+        <div class="timeline">
+            <div class="completed" title="Done">1</div>
+            <div title="Next">2</div>
+            <div title="Future">3</div>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task1" onclick="tickTask(this)">
+            <label for="task1">Check credit report</label>
+            <button class="info-btn" onclick="showInfo('Check your credit on Experian or ClearScore to ensure there are no surprises.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task2" onclick="tickTask(this)">
+            <label for="task2">Gather financial documents</label>
+            <button class="info-btn" onclick="showInfo('Collect payslips, P60, bank statements, and proof of savings.')">i</button>
+        </div>
+    </section>
+
+    <!-- Mortgage -->
+    <section id="mortgage">
+        <h2>Mortgage</h2>
+        <div class="task">
+            <input type="checkbox" id="task3" onclick="tickTask(this)">
+            <label for="task3">Engage mortgage advisor</label>
+            <button class="info-btn" onclick="showInfo('Meet a mortgage advisor to discuss options and get an Agreement in Principle.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task4" onclick="tickTask(this)">
+            <label for="task4">Obtain Agreement in Principle</label>
+            <button class="info-btn" onclick="showInfo('This shows sellers you are a serious buyer and indicates how much you can borrow.')">i</button>
+        </div>
+    </section>
+
+    <!-- Viewing & Offer -->
+    <section id="viewing">
+        <h2>Viewing & Offer</h2>
+        <div class="task">
+            <input type="checkbox" id="task5" onclick="tickTask(this)">
+            <label for="task5">Visit properties</label>
+            <button class="info-btn" onclick="showInfo('Schedule viewings in your preferred areas, note pros and cons.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task6" onclick="tickTask(this)">
+            <label for="task6">Make an offer</label>
+            <button class="info-btn" onclick="showInfo('Decide on offer strategy and negotiate via the estate agent.')">i</button>
+        </div>
+    </section>
+
+    <!-- Solicitor / Conveyancing -->
+    <section id="solicitor">
+        <h2>Solicitor / Conveyancing</h2>
+        <div class="task">
+            <input type="checkbox" id="task7" onclick="tickTask(this)">
+            <label for="task7">Instruct solicitor</label>
+            <button class="info-btn" onclick="showInfo('Your solicitor will handle legal checks, contracts, and liaising with the seller.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task8" onclick="tickTask(this)">
+            <label for="task8">Complete searches and enquiries</label>
+            <button class="info-btn" onclick="showInfo('Solicitor checks local planning, flooding, and property records.')">i</button>
+        </div>
+    </section>
+
+    <!-- Completion -->
+    <section id="completion">
+        <h2>Completion</h2>
+        <div class="task">
+            <input type="checkbox" id="task9" onclick="tickTask(this)">
+            <label for="task9">Exchange contracts / pay deposit</label>
+            <button class="info-btn" onclick="showInfo('You pay your deposit and become legally committed to the purchase.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task10" onclick="tickTask(this)">
+            <label for="task10">Completion day / receive keys</label>
+            <button class="info-btn" onclick="showInfo('The remaining mortgage funds are transferred, and you get the keys.')">i</button>
+        </div>
+    </section>
+
+    <!-- Renovation -->
+    <section id="renovation">
+        <h2>Renovation</h2>
+        <div class="task">
+            <input type="checkbox" id="task11" onclick="tickTask(this)">
+            <label for="task11">Prep walls and remove old flooring</label>
+            <button class="info-btn" onclick="showInfo('Clear rooms, prep walls for painting, remove old carpets/laminate.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task12" onclick="tickTask(this)">
+            <label for="task12">Paint walls & ceilings</label>
+            <button class="info-btn" onclick="showInfo('DIY paint walls, ceilings, and prep feature walls.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task13" onclick="tickTask(this)">
+            <label for="task13">Install wood laminate downstairs & carpet upstairs</label>
+            <button class="info-btn" onclick="showInfo('DIY laminate downstairs; hire pros to fit upstairs carpet.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task14" onclick="tickTask(this)">
+            <label for="task14">Install kitchen units & appliances</label>
+            <button class="info-btn" onclick="showInfo('Assemble cabinets, install induction hob, oven, dishwasher, and fridge.')">i</button>
+        </div>
+        <div class="task">
+            <input type="checkbox" id="task15" onclick="tickTask(this)">
+            <label for="task15">Fit electric shower & final touches</label>
+            <button class="info-btn" onclick="showInfo('Install electric shower, skirting, trims, and touch-up paint.')">i</button>
+        </div>
+    </section>
+</main>
+
+<script>
+function showSection(id) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function tickTask(box) {
+    if(box.checked){
+        alert('🎉 Well done! Task completed! Keep going!');
+    }
+}
+
+function showInfo(message){
+    alert(message);
+}
+</script>
+
+</body>
+</html>
