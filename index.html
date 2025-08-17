@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home Buying & Renovation Tracker</title>
+  <title>Home Tracker</title>
   <style>
     body {
       margin: 0;
@@ -14,11 +14,16 @@
     }
     /* Sidebar */
     #sidebar {
-      width: 160px;
+      width: 180px;
       background: linear-gradient(180deg, #ff6f61, #ffcc70);
       color: white;
       padding-top: 20px;
       flex-shrink: 0;
+    }
+    #sidebar h1 {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
     }
     #sidebar ul {
       list-style-type: none;
@@ -97,10 +102,13 @@
 <body>
   <!-- Sidebar -->
   <div id="sidebar">
+    <h1>Home Tracker</h1>
     <ul>
       <li onclick="showSection('finance-prep', this)" class="active">Finance Prep</li>
+      <li onclick="showSection('mortgage', this)">Mortgage</li>
       <li onclick="showSection('viewing-offer', this)">Viewing & Offer</li>
-      <li onclick="showSection('legal-process', this)">Legal Process</li>
+      <li onclick="showSection('solicitor', this)">Solicitor</li>
+      <li onclick="showSection('completion', this)">Completion</li>
       <li onclick="showSection('renovation', this)">Renovation</li>
     </ul>
   </div>
@@ -109,7 +117,7 @@
   <div id="main">
     <!-- Overall Progress -->
     <h2>Overall Progress</h2>
-    <div id="progress-text">0 tasks completed, 14 left to go</div>
+    <div id="progress-text">0 tasks completed, 0 left to go</div>
     <div class="progress-container">
       <div id="overall-progress" class="progress-bar"></div>
     </div>
@@ -118,54 +126,65 @@
     <div id="finance-prep" class="section active">
       <h2>Finance Prep</h2>
       <div class="timeframe">Target: August–September 2025</div>
-      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Check your credit score <span class="info" onclick="alert('Lenders check your credit score when you apply for a mortgage. Improve it by repaying debts and keeping utilization low.')">(i)</span></label>
-      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gather proof of savings / gifted deposit <span class="info" onclick="alert('If your deposit is gifted, you’ll need a signed gifted deposit letter + proof of funds from the person gifting.')">(i)</span></label>
-      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Get an Agreement in Principle <span class="info" onclick="alert('This is a statement from a lender confirming how much they may be willing to lend you.')">(i)</span></label>
+      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Check your credit score</label>
+      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gather proof of savings / gifted deposit</label>
+      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Get an Agreement in Principle</label>
+    </div>
+
+    <!-- Mortgage -->
+    <div id="mortgage" class="section">
+      <h2>Mortgage</h2>
+      <div class="timeframe">Target: September–October 2025</div>
+      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Speak to mortgage advisor</label>
+      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Submit full mortgage application</label>
     </div>
 
     <!-- Viewing & Offer -->
     <div id="viewing-offer" class="section">
       <h2>Viewing & Offer</h2>
       <div class="timeframe">Target: October–November 2025</div>
-      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Start viewing properties</label>
-      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Make an offer</label>
-      <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Contact a solicitor <span class="info" onclick="alert('Contact a solicitor/conveyancer once your offer is accepted. They’ll handle legal checks and contracts.')">(i)</span></label>
+      <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Start viewing properties</label>
+      <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Make an offer</label>
     </div>
 
-    <!-- Legal Process -->
-    <div id="legal-process" class="section">
-      <h2>Legal Process</h2>
+    <!-- Solicitor -->
+    <div id="solicitor" class="section">
+      <h2>Solicitor / Conveyancing</h2>
       <div class="timeframe">Target: November 2025–January 2026</div>
-      <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Survey & searches</label>
-      <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Exchange contracts</label>
-      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Pay deposit</label>
+      <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Instruct solicitor</label>
+      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Survey & searches</label>
+      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Exchange contracts & pay deposit</label>
+    </div>
+
+    <!-- Completion -->
+    <div id="completion" class="section">
+      <h2>Completion</h2>
+      <div class="timeframe">Target: January 2026</div>
+      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Completion day – collect keys</label>
+      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Move belongings into new home</label>
     </div>
 
     <!-- Renovation -->
     <div id="renovation" class="section">
       <h2>Renovation</h2>
       <div class="timeframe">Target: February 2026</div>
-      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Painting & wallpapering</label>
-      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Lay new flooring</label>
-      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
-      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Install electric shower</label>
-      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Change locks</label>
+      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Painting & wallpapering</label>
+      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Lay new flooring</label>
+      <label><input type="checkbox" id="task15" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
+      <label><input type="checkbox" id="task16" onchange="tickTask(this)"> Install electric shower</label>
+      <label><input type="checkbox" id="task17" onchange="tickTask(this)"> Change locks</label>
     </div>
   </div>
 
   <script>
-    let activeTab = document.querySelector('#sidebar li.active');
-
     function showSection(id, el) {
       document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
       document.getElementById(id).classList.add('active');
 
       document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
       el.classList.add('active');
-      activeTab = el;
     }
 
-    // Tick tasks with localStorage and motivational messages
     function tickTask(box) {
       const taskId = box.id;
       if (box.checked) {
@@ -177,7 +196,6 @@
       updateOverallProgress();
     }
 
-    // Load checked state on page load
     window.onload = function() {
       document.querySelectorAll('input[type="checkbox"]').forEach(box => {
         if (localStorage.getItem(box.id) === 'true') {
@@ -187,7 +205,6 @@
       updateOverallProgress();
     };
 
-    // Overall progress bar + counter
     function updateOverallProgress() {
       const allTasks = document.querySelectorAll('input[type="checkbox"]');
       const completed = Array.from(allTasks).filter(box => box.checked).length;
