@@ -72,6 +72,10 @@
       border-radius: 10px;
       transition: width 0.4s ease;
     }
+    #progress-text {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
     /* Checkboxes */
     label {
       display: block;
@@ -105,6 +109,7 @@
   <div id="main">
     <!-- Overall Progress -->
     <h2>Overall Progress</h2>
+    <div id="progress-text">0 tasks completed, 14 left to go</div>
     <div class="progress-container">
       <div id="overall-progress" class="progress-bar"></div>
     </div>
@@ -112,7 +117,7 @@
     <!-- Finance Prep -->
     <div id="finance-prep" class="section active">
       <h2>Finance Prep</h2>
-      <div class="timeframe">Target: March–April 2025</div>
+      <div class="timeframe">Target: August–September 2025</div>
       <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Check your credit score <span class="info" onclick="alert('Lenders check your credit score when you apply for a mortgage. Improve it by repaying debts and keeping utilization low.')">(i)</span></label>
       <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gather proof of savings / gifted deposit <span class="info" onclick="alert('If your deposit is gifted, you’ll need a signed gifted deposit letter + proof of funds from the person gifting.')">(i)</span></label>
       <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Get an Agreement in Principle <span class="info" onclick="alert('This is a statement from a lender confirming how much they may be willing to lend you.')">(i)</span></label>
@@ -139,7 +144,7 @@
     <!-- Renovation -->
     <div id="renovation" class="section">
       <h2>Renovation</h2>
-      <div class="timeframe">Target: February–March 2026</div>
+      <div class="timeframe">Target: February 2026</div>
       <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Painting & wallpapering</label>
       <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Lay new flooring</label>
       <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
@@ -182,12 +187,14 @@
       updateOverallProgress();
     };
 
-    // Overall progress bar
+    // Overall progress bar + counter
     function updateOverallProgress() {
       const allTasks = document.querySelectorAll('input[type="checkbox"]');
       const completed = Array.from(allTasks).filter(box => box.checked).length;
+      const remaining = allTasks.length - completed;
       const percent = (completed / allTasks.length) * 100;
       document.getElementById('overall-progress').style.width = percent + "%";
+      document.getElementById('progress-text').innerText = `${completed} tasks completed, ${remaining} left to go`;
     }
   </script>
 </body>
