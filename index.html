@@ -1,194 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home Buying & Renovation Tracker</title>
-<style>
-    body { font-family: Arial, sans-serif; margin:0; display:flex; background: #f0f8ff; }
-    nav { width:180px; background:#ff6f61; color:white; height:100vh; padding-top:20px; }
-    nav h2 { text-align:center; margin-bottom:20px; font-size:1.4em; }
-    nav a { display:block; padding:12px 15px; color:white; text-decoration:none; font-size:1.1em; }
-    nav a:hover { background:#ff8a75; }
-    main { flex:1; padding:25px; font-size:1.1em; }
-    section { display:none; }
-    section.active { display:block; }
-    .task { margin-bottom:20px; }
-    .task input[type='checkbox'] { margin-right:12px; transform:scale(1.2); }
-    .info-btn { background:#ffd700; color:#333; border:none; padding:3px 7px; border-radius:50%; cursor:pointer; margin-left:8px; font-weight:bold; }
-    .timeline { margin:25px 0; display:flex; justify-content:space-between; }
-    .timeline div { width:25px; height:25px; border-radius:50%; background:#ffcccb; text-align:center; line-height:25px; color:white; font-weight:bold; }
-    .timeline div.completed { background:#2ecc71; }
-    .timeframe { font-style:italic; margin-bottom:15px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Buying & Renovation Tracker</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    /* Sidebar */
+    #sidebar {
+      width: 200px;
+      background: #222;
+      color: white;
+      padding-top: 20px;
+      flex-shrink: 0;
+    }
+    #sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #sidebar li {
+      padding: 12px;
+      cursor: pointer;
+    }
+    #sidebar li:hover {
+      background: #444;
+    }
+    #sidebar li.active {
+      background: #ff6f61;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+    /* Main content */
+    #main {
+      flex-grow: 1;
+      padding: 20px;
+      background: #f7f9fc;
+      overflow-y: auto;
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 10px;
+      margin: 15px 0;
+      height: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #ff6f61, #ffcc70);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+    /* Checkboxes */
+    label {
+      display: block;
+      margin: 6px 0;
+    }
+    /* Info buttons */
+    .info {
+      margin-left: 6px;
+      cursor: pointer;
+      color: #007bff;
+    }
+  </style>
 </head>
 <body>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <ul>
+      <li onclick="showSection('finance-prep', this)" class="active">Finance Prep</li>
+      <li onclick="showSection('viewing-offer', this)">Viewing & Offer</li>
+      <li onclick="showSection('legal-process', this)">Legal Process</li>
+      <li onclick="showSection('renovation', this)">Renovation</li>
+    </ul>
+  </div>
 
-<nav>
-    <h2>Home Tracker</h2>
-    <a href="#" onclick="showSection('finance')">Finance Prep</a>
-    <a href="#" onclick="showSection('mortgage')">Mortgage</a>
-    <a href="#" onclick="showSection('viewing')">Viewing & Offer</a>
-    <a href="#" onclick="showSection('solicitor')">Solicitor / Conveyancing</a>
-    <a href="#" onclick="showSection('completion')">Completion</a>
-    <a href="#" onclick="showSection('renovation')">Renovation</a>
-</nav>
+  <!-- Main Content -->
+  <div id="main">
+    <!-- Finance Prep -->
+    <div id="finance-prep" class="section active">
+      <h2>Finance Prep (6–9 months before purchase)</h2>
+      <div class="progress-container">
+        <div id="finance-progress" class="progress-bar"></div>
+      </div>
+      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Check your credit score <span class="info" onclick="alert('Lenders check your credit score when you apply for a mortgage. Improve it by repaying debts and keeping utilization low.')">(i)</span></label>
+      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gather proof of savings / gifted deposit <span class="info" onclick="alert('If your deposit is gifted, you’ll need a signed gifted deposit letter + proof of funds from the person gifting.')">(i)</span></label>
+      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Get an Agreement in Principle <span class="info" onclick="alert('This is a statement from a lender confirming how much they may be willing to lend you.')">(i)</span></label>
+    </div>
 
-<main>
-    <section id="finance" class="active">
-        <h2>Finance Prep</h2>
-        <div class="timeframe">Timeframe: August - October 2025</div>
-        <div class="timeline">
-            <div class="completed" title="Done">1</div>
-            <div title="Next">2</div>
-            <div title="Future">3</div>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task1" onclick="tickTask(this)">
-            <label for="task1">Check credit report</label>
-            <button class="info-btn" onclick="showInfo('Check your credit on Experian or ClearScore to ensure there are no surprises.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task2" onclick="tickTask(this)">
-            <label for="task2">Gather financial documents</label>
-            <button class="info-btn" onclick="showInfo('Collect payslips, P60, bank statements, and proof of savings or gifted deposit.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task2a" onclick="tickTask(this)">
-            <label for="task2a">Arrange gifted deposit</label>
-            <button class="info-btn" onclick="showInfo('Obtain a letter from family stating the gift amount, that it does not need to be repaid, and provide proof of funds from their account.')">i</button>
-        </div>
-    </section>
+    <!-- Viewing & Offer -->
+    <div id="viewing-offer" class="section">
+      <h2>Viewing & Offer (3–4 months before purchase)</h2>
+      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Start viewing properties</label>
+      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Make an offer</label>
+      <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Contact a solicitor <span class="info" onclick="alert('Contact a solicitor/conveyancer once your offer is accepted. They’ll handle legal checks and contracts.')">(i)</span></label>
+    </div>
 
-    <section id="mortgage">
-        <h2>Mortgage</h2>
-        <div class="timeframe">Timeframe: October - November 2025</div>
-        <div class="task">
-            <input type="checkbox" id="task3" onclick="tickTask(this)">
-            <label for="task3">Engage mortgage advisor</label>
-            <button class="info-btn" onclick="showInfo('Meet a mortgage advisor to discuss options and get an Agreement in Principle.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task4" onclick="tickTask(this)">
-            <label for="task4">Obtain Agreement in Principle</label>
-            <button class="info-btn" onclick="showInfo('This shows sellers you are a serious buyer and indicates how much you can borrow.')">i</button>
-        </div>
-    </section>
+    <!-- Legal Process -->
+    <div id="legal-process" class="section">
+      <h2>Legal Process (2–3 months before move-in)</h2>
+      <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Survey & searches</label>
+      <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Exchange contracts</label>
+      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Pay deposit</label>
+    </div>
 
-    <section id="viewing">
-        <h2>Viewing & Offer</h2>
-        <div class="timeframe">Timeframe: November - December 2025</div>
-        <div class="task">
-            <input type="checkbox" id="task5" onclick="tickTask(this)">
-            <label for="task5">Visit properties</label>
-            <button class="info-btn" onclick="showInfo('Schedule viewings in your preferred areas, note pros and cons.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task6" onclick="tickTask(this)">
-            <label for="task6">Make an offer</label>
-            <button class="info-btn" onclick="showInfo('Decide on offer strategy and negotiate via the estate agent.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task6a" onclick="tickTask(this)">
-            <label for="task6a">Contact solicitor</label>
-            <button class="info-btn" onclick="showInfo('Once your offer is accepted, instruct a solicitor to begin the legal conveyancing process.')">i</button>
-        </div>
-    </section>
+    <!-- Renovation -->
+    <div id="renovation" class="section">
+      <h2>Renovation (first 4 weeks after keys)</h2>
+      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Painting & wallpapering</label>
+      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Lay new flooring</label>
+      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
+      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Install electric shower</label>
+      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Change locks</label>
+    </div>
+  </div>
 
-    <section id="solicitor">
-        <h2>Solicitor / Conveyancing</h2>
-        <div class="timeframe">Timeframe: December 2025 - January 2026</div>
-        <div class="task">
-            <input type="checkbox" id="task7" onclick="tickTask(this)">
-            <label for="task7">Instruct solicitor</label>
-            <button class="info-btn" onclick="showInfo('Your solicitor will handle legal checks, contracts, and liaising with the seller.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task8" onclick="tickTask(this)">
-            <label for="task8">Complete searches and enquiries</label>
-            <button class="info-btn" onclick="showInfo('Solicitor checks local planning, flooding, and property records.')">i</button>
-        </div>
-    </section>
+  <script>
+    // Sidebar navigation
+    let activeTab = document.querySelector('#sidebar li.active');
+    function showSection(id, el) {
+      // hide all sections
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      // remove all highlights
+      document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
+      // highlight clicked
+      el.classList.add('active');
+      activeTab = el;
+    }
 
-    <section id="completion">
-        <h2>Completion</h2>
-        <div class="timeframe">Timeframe: January 2026</div>
-        <div class="task">
-            <input type="checkbox" id="task9" onclick="tickTask(this)">
-            <label for="task9">Exchange contracts / pay deposit</label>
-            <button class="info-btn" onclick="showInfo('You pay your deposit and become legally committed to the purchase.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task10" onclick="tickTask(this)">
-            <label for="task10">Completion day / receive keys</label>
-            <button class="info-btn" onclick="showInfo('The remaining mortgage funds are transferred, and you get the keys.')">i</button>
-        </div>
-    </section>
+    // Persistent sidebar highlight
+    document.addEventListener('click', () => {
+      if (activeTab) activeTab.classList.add('active');
+    });
 
-    <section id="renovation">
-        <h2>Renovation</h2>
-        <div class="timeframe">Timeframe: February - March 2026 (4 weeks, 4 days per week)</div>
-        <div class="task">
-            <input type="checkbox" id="task11" onclick="tickTask(this)">
-            <label for="task11">Prep walls and remove old flooring</label>
-            <button class="info-btn" onclick="showInfo('Clear rooms, prep walls for painting, remove old carpets/laminate.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task12" onclick="tickTask(this)">
-            <label for="task12">Paint walls & ceilings</label>
-            <button class="info-btn" onclick="showInfo('DIY paint walls, ceilings, and prep feature walls.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task13" onclick="tickTask(this)">
-            <label for="task13">Install wood laminate downstairs & carpet upstairs</label>
-            <button class="info-btn" onclick="showInfo('DIY laminate downstairs; hire pros to fit upstairs carpet.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task14" onclick="tickTask(this)">
-            <label for="task14">Install kitchen units & appliances</label>
-            <button class="info-btn" onclick="showInfo('Assemble cabinets, install induction hob, oven, dishwasher, and fridge.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task15" onclick="tickTask(this)">
-            <label for="task15">Fit electric shower & final touches</label>
-            <button class="info-btn" onclick="showInfo('Install electric shower, skirting, trims, and touch-up paint.')">i</button>
-        </div>
-        <div class="task">
-            <input type="checkbox" id="task16" onclick="tickTask(this)">
-            <label for="task16">Change locks</label>
-            <button class="info-btn" onclick="showInfo('For security, change all exterior door locks after moving in.')">i</button>
-        </div>
-    </section>
-</main>
-
-<script>
-function showSection(id) {
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-
-function tickTask(box) {
-    const taskId = box.id;
-    if(box.checked){
+    // Ticking tasks with localStorage + motivational message
+    function tickTask(box) {
+      const taskId = box.id;
+      if (box.checked) {
         alert('🎉 Well done! Task completed! Keep going!');
         localStorage.setItem(taskId, 'true');
-    } else {
+      } else {
         localStorage.removeItem(taskId);
+      }
+      updateFinanceProgress();
     }
-}
 
-function showInfo(message){
-    alert(message);
-}
-
-window.onload = function() {
-    document.querySelectorAll('input[type="checkbox"]').forEach(box => {
-        if(localStorage.getItem(box.id) === 'true') {
-            box.checked = true;
+    // Load ticked tasks on page load
+    window.onload = function() {
+      document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        if (localStorage.getItem(box.id) === 'true') {
+          box.checked = true;
         }
-    });
-};
-</script>
+      });
+      updateFinanceProgress();
+    };
 
+    // Finance Prep progress bar
+    function updateFinanceProgress() {
+      const financeTasks = document.querySelectorAll('#finance-prep input[type="checkbox"]');
+      const completed = Array.from(financeTasks).filter(box => box.checked).length;
+      const percent = (completed / financeTasks.length) * 100;
+      document.getElementById('finance-progress').style.width = percent + "%";
+    }
+  </script>
 </body>
 </html>
