@@ -10,11 +10,12 @@
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
+      background: #f9fbfd;
     }
     /* Sidebar */
     #sidebar {
-      width: 200px;
-      background: #222;
+      width: 160px;
+      background: linear-gradient(180deg, #ff6f61, #ffcc70);
       color: white;
       padding-top: 20px;
       flex-shrink: 0;
@@ -25,13 +26,14 @@
     }
     #sidebar li {
       padding: 12px;
+      font-size: 16px;
       cursor: pointer;
     }
     #sidebar li:hover {
-      background: #444;
+      background: rgba(255, 255, 255, 0.2);
     }
     #sidebar li.active {
-      background: #ff6f61;
+      background: rgba(255, 255, 255, 0.3);
       font-weight: bold;
       border-radius: 6px;
     }
@@ -39,7 +41,6 @@
     #main {
       flex-grow: 1;
       padding: 20px;
-      background: #f7f9fc;
       overflow-y: auto;
     }
     .section {
@@ -51,18 +52,23 @@
     h2 {
       margin-top: 0;
     }
+    .timeframe {
+      font-style: italic;
+      color: #666;
+      margin-bottom: 10px;
+    }
     /* Progress Bar */
     .progress-container {
       width: 100%;
       background: #eee;
       border-radius: 10px;
       margin: 15px 0;
-      height: 20px;
+      height: 22px;
     }
     .progress-bar {
       height: 100%;
       width: 0;
-      background: linear-gradient(90deg, #ff6f61, #ffcc70);
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
       border-radius: 10px;
       transition: width 0.4s ease;
     }
@@ -70,6 +76,11 @@
     label {
       display: block;
       margin: 6px 0;
+      font-size: 15px;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 6px;
     }
     /* Info buttons */
     .info {
@@ -92,12 +103,16 @@
 
   <!-- Main Content -->
   <div id="main">
+    <!-- Overall Progress -->
+    <h2>Overall Progress</h2>
+    <div class="progress-container">
+      <div id="overall-progress" class="progress-bar"></div>
+    </div>
+
     <!-- Finance Prep -->
     <div id="finance-prep" class="section active">
-      <h2>Finance Prep (6–9 months before purchase)</h2>
-      <div class="progress-container">
-        <div id="finance-progress" class="progress-bar"></div>
-      </div>
+      <h2>Finance Prep</h2>
+      <div class="timeframe">Target: March–April 2025</div>
       <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Check your credit score <span class="info" onclick="alert('Lenders check your credit score when you apply for a mortgage. Improve it by repaying debts and keeping utilization low.')">(i)</span></label>
       <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gather proof of savings / gifted deposit <span class="info" onclick="alert('If your deposit is gifted, you’ll need a signed gifted deposit letter + proof of funds from the person gifting.')">(i)</span></label>
       <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Get an Agreement in Principle <span class="info" onclick="alert('This is a statement from a lender confirming how much they may be willing to lend you.')">(i)</span></label>
@@ -105,7 +120,8 @@
 
     <!-- Viewing & Offer -->
     <div id="viewing-offer" class="section">
-      <h2>Viewing & Offer (3–4 months before purchase)</h2>
+      <h2>Viewing & Offer</h2>
+      <div class="timeframe">Target: October–November 2025</div>
       <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Start viewing properties</label>
       <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Make an offer</label>
       <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Contact a solicitor <span class="info" onclick="alert('Contact a solicitor/conveyancer once your offer is accepted. They’ll handle legal checks and contracts.')">(i)</span></label>
@@ -113,7 +129,8 @@
 
     <!-- Legal Process -->
     <div id="legal-process" class="section">
-      <h2>Legal Process (2–3 months before move-in)</h2>
+      <h2>Legal Process</h2>
+      <div class="timeframe">Target: November 2025–January 2026</div>
       <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Survey & searches</label>
       <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Exchange contracts</label>
       <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Pay deposit</label>
@@ -121,7 +138,8 @@
 
     <!-- Renovation -->
     <div id="renovation" class="section">
-      <h2>Renovation (first 4 weeks after keys)</h2>
+      <h2>Renovation</h2>
+      <div class="timeframe">Target: February–March 2026</div>
       <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Painting & wallpapering</label>
       <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Lay new flooring</label>
       <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
@@ -131,52 +149,45 @@
   </div>
 
   <script>
-    // Sidebar navigation
     let activeTab = document.querySelector('#sidebar li.active');
+
     function showSection(id, el) {
-      // hide all sections
       document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      // remove all highlights
+
       document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
-      // highlight clicked
       el.classList.add('active');
       activeTab = el;
     }
 
-    // Persistent sidebar highlight
-    document.addEventListener('click', () => {
-      if (activeTab) activeTab.classList.add('active');
-    });
-
-    // Ticking tasks with localStorage + motivational message
+    // Tick tasks with localStorage and motivational messages
     function tickTask(box) {
       const taskId = box.id;
       if (box.checked) {
-        alert('🎉 Well done! Task completed! Keep going!');
+        alert('🎉 Great job! Another step closer!');
         localStorage.setItem(taskId, 'true');
       } else {
         localStorage.removeItem(taskId);
       }
-      updateFinanceProgress();
+      updateOverallProgress();
     }
 
-    // Load ticked tasks on page load
+    // Load checked state on page load
     window.onload = function() {
       document.querySelectorAll('input[type="checkbox"]').forEach(box => {
         if (localStorage.getItem(box.id) === 'true') {
           box.checked = true;
         }
       });
-      updateFinanceProgress();
+      updateOverallProgress();
     };
 
-    // Finance Prep progress bar
-    function updateFinanceProgress() {
-      const financeTasks = document.querySelectorAll('#finance-prep input[type="checkbox"]');
-      const completed = Array.from(financeTasks).filter(box => box.checked).length;
-      const percent = (completed / financeTasks.length) * 100;
-      document.getElementById('finance-progress').style.width = percent + "%";
+    // Overall progress bar
+    function updateOverallProgress() {
+      const allTasks = document.querySelectorAll('input[type="checkbox"]');
+      const completed = Array.from(allTasks).filter(box => box.checked).length;
+      const percent = (completed / allTasks.length) * 100;
+      document.getElementById('overall-progress').style.width = percent + "%";
     }
   </script>
 </body>
