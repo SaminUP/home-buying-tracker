@@ -5,98 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home Tracker</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: #f9fbfd;
-    }
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; background: #f9fbfd; }
     /* Sidebar */
-    #sidebar {
-      width: 200px;
-      background: linear-gradient(180deg, #ff6f61, #ffcc70);
-      color: white;
-      padding-top: 20px;
-      flex-shrink: 0;
-    }
-    #sidebar h1 {
-      font-size: 18px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #sidebar ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    #sidebar li {
-      padding: 12px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #sidebar li:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    #sidebar li.active {
-      background: rgba(255, 255, 255, 0.3);
-      font-weight: bold;
-      border-radius: 6px;
-    }
-    /* Main content */
-    #main {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    h2 {
-      margin-top: 0;
-    }
-    .timeframe {
-      font-style: italic;
-      color: #666;
-      margin-bottom: 10px;
-    }
-    /* Progress Bar */
-    .progress-container {
-      width: 100%;
-      background: #eee;
-      border-radius: 10px;
-      margin: 15px 0;
-      height: 22px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #6a11cb, #2575fc);
-      border-radius: 10px;
-      transition: width 0.4s ease;
-    }
-    #progress-text {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    /* Checkboxes */
-    label {
-      display: block;
-      margin: 6px 0;
-      font-size: 15px;
-    }
-    input[type="checkbox"] {
-      transform: scale(1.2);
-      margin-right: 6px;
-    }
-    /* Info buttons */
-    .info {
-      margin-left: 6px;
-      cursor: pointer;
-      color: #007bff;
-    }
+    #sidebar { width: 200px; background: linear-gradient(180deg, #ff6f61, #ffcc70); color: white; padding-top: 20px; flex-shrink: 0; }
+    #sidebar h1 { font-size: 18px; text-align: center; margin-bottom: 20px; }
+    #sidebar ul { list-style-type: none; padding: 0; }
+    #sidebar li { padding: 12px; font-size: 16px; cursor: pointer; }
+    #sidebar li:hover { background: rgba(255, 255, 255, 0.2); }
+    #sidebar li.active { background: rgba(255, 255, 255, 0.3); font-weight: bold; border-radius: 6px; }
+    /* Main */
+    #main { flex-grow: 1; padding: 20px; overflow-y: auto; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h2 { margin-top: 0; }
+    .timeframe { font-style: italic; color: #666; margin-bottom: 10px; }
+    /* Progress */
+    .progress-container { width: 100%; background: #eee; border-radius: 10px; margin: 15px 0; height: 22px; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, #6a11cb, #2575fc); border-radius: 10px; transition: width 0.4s ease; }
+    #progress-text { font-weight: bold; margin-bottom: 8px; }
+    label { display: block; margin: 6px 0; font-size: 15px; }
+    input[type="checkbox"] { transform: scale(1.2); margin-right: 6px; }
+    .info { margin-left: 6px; cursor: pointer; color: #007bff; }
   </style>
 </head>
 <body>
@@ -104,97 +33,100 @@
   <div id="sidebar">
     <h1>Home Tracker</h1>
     <ul>
-      <li onclick="showSection('finance-prep', this)" class="active">Finance Prep</li>
-      <li onclick="showSection('mortgage', this)">Mortgage</li>
-      <li onclick="showSection('viewing-offer', this)">Viewing & Offer</li>
-      <li onclick="showSection('solicitor', this)">Solicitor</li>
-      <li onclick="showSection('exchange', this)">Exchange</li>
-      <li onclick="showSection('completion', this)">Completion</li>
-      <li onclick="showSection('after-move', this)">After Move</li>
+      <li onclick="showSection('aug', this)" class="active">Aug 2025</li>
+      <li onclick="showSection('sep', this)">Sep 2025</li>
+      <li onclick="showSection('oct', this)">Oct 2025</li>
+      <li onclick="showSection('nov', this)">Nov 2025</li>
+      <li onclick="showSection('dec', this)">Dec 2025</li>
+      <li onclick="showSection('jan', this)">Jan 2026</li>
+      <li onclick="showSection('feb', this)">Feb 2026</li>
+      <li onclick="showSection('mar', this)">Mar 2026</li>
+      <li onclick="showSection('apr', this)">Apr 2026</li>
       <li onclick="showSection('renovation', this)">Renovation</li>
     </ul>
   </div>
 
   <!-- Main Content -->
   <div id="main">
-    <!-- Overall Progress -->
     <h2>Overall Progress</h2>
     <div id="progress-text">0 tasks completed, 0 left to go</div>
-    <div class="progress-container">
-      <div id="overall-progress" class="progress-bar"></div>
+    <div class="progress-container"><div id="overall-progress" class="progress-bar"></div></div>
+
+    <!-- Aug -->
+    <div id="aug" class="section active">
+      <h2>August 2025</h2>
+      <div class="timeframe">Now → starting the process</div>
+      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Confirm deposit (10%) is accessible</label>
+      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Check credit reports & tidy debts</label>
     </div>
 
-    <!-- Finance Prep -->
-    <div id="finance-prep" class="section active">
-      <h2>Finance Prep <span class="info" onclick="alert('Make sure finances are in order before mortgage or viewing. Includes deposit, credit, and paperwork.')">(i)</span></h2>
-      <div class="timeframe">Target: Aug – Oct 2025</div>
-      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Confirm deposit (10%) is accessible</label>
-      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Gifted deposit letter & proof of funds</label>
-      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Check credit reports & tidy debts</label>
-      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Gather key docs (payslips, P60, bank, ID)</label>
-      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Research mortgage advisors</label>
+    <!-- Sep -->
+    <div id="sep" class="section">
+      <h2>September 2025</h2>
+      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Gather key docs (payslips, P60, bank, ID)</label>
+      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Research mortgage advisors</label>
+    </div>
+
+    <!-- Oct -->
+    <div id="oct" class="section">
+      <h2>October 2025</h2>
+      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Gifted deposit letter & proof of funds</label>
       <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Start browsing properties online</label>
     </div>
 
-    <!-- Mortgage -->
-    <div id="mortgage" class="section">
-      <h2>Mortgage <span class="info" onclick="alert('Work with a mortgage advisor to get an Agreement in Principle, then full application once offer accepted.')">(i)</span></h2>
-      <div class="timeframe">Target: Nov 2025</div>
+    <!-- Nov -->
+    <div id="nov" class="section">
+      <h2>November 2025</h2>
       <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Engage mortgage advisor</label>
       <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Obtain Agreement in Principle (AIP)</label>
-      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Submit full mortgage application</label>
     </div>
 
-    <!-- Viewing & Offer -->
-    <div id="viewing-offer" class="section">
-      <h2>Viewing & Offer <span class="info" onclick="alert('View properties, make offers, and prepare to move quickly once accepted.')">(i)</span></h2>
-      <div class="timeframe">Target: Dec 2025 – Jan 2026</div>
-      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Book property viewings</label>
-      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Make an offer</label>
-      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Offer accepted in writing</label>
+    <!-- Dec -->
+    <div id="dec" class="section">
+      <h2>December 2025</h2>
+      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Book property viewings</label>
+      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Make an offer</label>
     </div>
 
-    <!-- Solicitor -->
-    <div id="solicitor" class="section">
-      <h2>Solicitor / Conveyancing <span class="info" onclick="alert('Once offer is accepted, instruct a solicitor. They will run searches, handle contracts, and manage legal side.')">(i)</span></h2>
-      <div class="timeframe">Target: Dec 2025 – Feb 2026</div>
-      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Instruct solicitor/conveyancer</label>
-      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Provide ID, proof of funds, gifted deposit docs</label>
-      <label><input type="checkbox" id="task15" onchange="tickTask(this)"> Solicitor runs searches & enquiries</label>
-      <label><input type="checkbox" id="task16" onchange="tickTask(this)"> Book survey (HomeBuyer/structural)</label>
+    <!-- Jan -->
+    <div id="jan" class="section">
+      <h2>January 2026</h2>
+      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Offer accepted in writing</label>
+      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Instruct solicitor/conveyancer</label>
+      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Submit full mortgage application</label>
+      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Book survey (HomeBuyer/structural)</label>
     </div>
 
-    <!-- Exchange -->
-    <div id="exchange" class="section">
-      <h2>Exchange <span class="info" onclick="alert('About 2 weeks before completion, contracts are exchanged and deposit paid.')">(i)</span></h2>
-      <div class="timeframe">Target: March 2026</div>
-      <label><input type="checkbox" id="task17" onchange="tickTask(this)"> Pay 10% deposit to solicitor</label>
-      <label><input type="checkbox" id="task18" onchange="tickTask(this)"> Arrange buildings insurance</label>
-      <label><input type="checkbox" id="task19" onchange="tickTask(this)"> Sign contracts</label>
+    <!-- Feb -->
+    <div id="feb" class="section">
+      <h2>February 2026</h2>
+      <label><input type="checkbox" id="task15" onchange="tickTask(this)"> Mortgage approved & valuation completed</label>
+      <label><input type="checkbox" id="task16" onchange="tickTask(this)"> Solicitor runs searches & enquiries</label>
+      <label><input type="checkbox" id="task17" onchange="tickTask(this)"> Start planning tenancy notice</label>
+      <label><input type="checkbox" id="task18" onchange="tickTask(this)"> Get quotes for removals</label>
     </div>
 
-    <!-- Completion -->
-    <div id="completion" class="section">
-      <h2>Completion <span class="info" onclick="alert('Move-in day! Solicitor transfers funds, you collect keys and can move in.')">(i)</span></h2>
-      <div class="timeframe">Target: March 2026</div>
-      <label><input type="checkbox" id="task20" onchange="tickTask(this)"> Completion day – collect keys</label>
-      <label><input type="checkbox" id="task21" onchange="tickTask(this)"> Move belongings into new home</label>
+    <!-- Mar -->
+    <div id="mar" class="section">
+      <h2>March 2026</h2>
+      <label><input type="checkbox" id="task19" onchange="tickTask(this)"> Exchange contracts & pay 10% deposit</label>
+      <label><input type="checkbox" id="task20" onchange="tickTask(this)"> Arrange buildings insurance</label>
+      <label><input type="checkbox" id="task21" onchange="tickTask(this)"> Completion day – collect keys & move in 🎉</label>
       <label><input type="checkbox" id="task22" onchange="tickTask(this)"> Change locks</label>
     </div>
 
-    <!-- After Move -->
-    <div id="after-move" class="section">
-      <h2>After Move <span class="info" onclick="alert('Handle rental handover, update addresses, and settle into your new home.')">(i)</span></h2>
-      <div class="timeframe">Target: April 2026</div>
-      <label><input type="checkbox" id="task23" onchange="tickTask(this)"> Hand notice in on rental / move overlap</label>
+    <!-- Apr -->
+    <div id="apr" class="section">
+      <h2>April 2026</h2>
+      <label><input type="checkbox" id="task23" onchange="tickTask(this)"> Vacate rental & hand back keys</label>
       <label><input type="checkbox" id="task24" onchange="tickTask(this)"> Notify council, utilities, broadband</label>
-      <label><input type="checkbox" id="task25" onchange="tickTask(this)"> Return rental keys & settle deposit</label>
+      <label><input type="checkbox" id="task25" onchange="tickTask(this)"> Finalise tenancy deposit return</label>
     </div>
 
     <!-- Renovation -->
     <div id="renovation" class="section">
-      <h2>Renovation <span class="info" onclick="alert('Plan home improvements after moving in. Allows a smooth start and upgrades where needed.')">(i)</span></h2>
-      <div class="timeframe">Target: After completion (Mar–Apr 2026)</div>
+      <h2>Renovation</h2>
+      <div class="timeframe">After moving in</div>
       <label><input type="checkbox" id="task26" onchange="tickTask(this)"> Painting & wallpapering</label>
       <label><input type="checkbox" id="task27" onchange="tickTask(this)"> Lay new flooring</label>
       <label><input type="checkbox" id="task28" onchange="tickTask(this)"> Fit new kitchen & appliances</label>
@@ -209,29 +141,21 @@
       document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
       el.classList.add('active');
     }
-
     function tickTask(box) {
       const taskId = box.id;
-      if (box.checked) {
-        localStorage.setItem(taskId, 'true');
-      } else {
-        localStorage.removeItem(taskId);
-      }
+      if (box.checked) localStorage.setItem(taskId, 'true');
+      else localStorage.removeItem(taskId);
       updateOverallProgress();
     }
-
     window.onload = function() {
       document.querySelectorAll('input[type="checkbox"]').forEach(box => {
-        if (localStorage.getItem(box.id) === 'true') {
-          box.checked = true;
-        }
+        if (localStorage.getItem(box.id) === 'true') box.checked = true;
       });
       updateOverallProgress();
     };
-
     function updateOverallProgress() {
       const allTasks = document.querySelectorAll('input[type="checkbox"]');
-      const completed = Array.from(allTasks).filter(box => box.checked).length;
+      const completed = Array.from(allTasks).filter(b => b.checked).length;
       const remaining = allTasks.length - completed;
       const percent = (completed / allTasks.length) * 100;
       document.getElementById('overall-progress').style.width = percent + "%";
