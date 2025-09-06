@@ -18,7 +18,7 @@
     .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
 
     /* sliders area */
-    .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:32px;justify-items:center;padding:20px}
+    .sliders{display:flex;gap:48px;align-items:flex-end;justify-content:center;padding:20px;flex-wrap:wrap}
     .fader{width:120px;display:flex;flex-direction:column;align-items:center;gap:12px}
     .fader label{font-size:14px;text-align:center;font-weight:600;margin-bottom:6px}
     .fader .value{font-weight:600;text-align:center;line-height:1.4;margin-bottom:8px}
@@ -46,7 +46,7 @@
 
     @media (max-width:900px){
       .layout{grid-template-columns:1fr;}
-      .sliders{grid-template-columns:repeat(3, 1fr);}
+      .sliders{overflow-x:auto;padding-bottom:8px}
     }
 
     .sr-only{position:absolute;left:-9999px}
