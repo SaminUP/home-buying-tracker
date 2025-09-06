@@ -1,222 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home Tracker</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Home-Buying Budget Tracker</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background: #f9fbfd;
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#7dd3fc;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Helvetica,Arial}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#020617 0%, #081028 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:28px}
+    .app{width:100%;max-width:1100px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    header h1{font-size:20px;margin:0}
+    .controls{display:flex;gap:12px;align-items:center}
+    input[type=number]{width:170px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
+
+    /* sliders area */
+    .sliders{display:flex;gap:18px;align-items:end;justify-content:center;padding:12px}
+    .fader{width:86px;display:flex;flex-direction:column;align-items:center}
+    .fader label{font-size:13px;margin-bottom:10px;text-align:center;color:var(--muted)}
+    .fader .value{margin-top:10px;font-weight:600}
+
+    /* make horizontal range look vertical */
+    input[type=range]{appearance:none;width:180px;height:6px;transform:rotate(-90deg);margin:0;padding:0}
+    input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#0ea5e9 0%, #06b6d4 100%)}
+    input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid rgba(0,0,0,0.2);transform:translateY(-6px)}
+    input[type=range]:focus{outline:none}
+
+    /* meter */
+    .summary{display:flex;flex-direction:column;gap:12px}
+    .totals{display:flex;justify-content:space-between;align-items:center}
+    .pie{height:200px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center}
+
+    .list{display:grid;gap:8px}
+    .list .row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:var(--glass)}
+    .row small{color:var(--muted)}
+
+    .footer{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+    button{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;cursor:pointer}
+    button.primary{background:linear-gradient(90deg,#06b6d4,#0ea5e9);color:#05202a;border:none}
+
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr;}
+      .sliders{overflow-x:auto;padding-bottom:8px}
     }
-    /* Sidebar */
-    #sidebar {
-      width: 180px;
-      background: linear-gradient(180deg, #ff6f61, #ffcc70);
-      color: white;
-      padding-top: 20px;
-      flex-shrink: 0;
-    }
-    #sidebar h1 {
-      font-size: 18px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #sidebar ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    #sidebar li {
-      padding: 12px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #sidebar li:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    #sidebar li.active {
-      background: rgba(255, 255, 255, 0.3);
-      font-weight: bold;
-      border-radius: 6px;
-    }
-    /* Main content */
-    #main {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    h2 {
-      margin-top: 0;
-    }
-    .timeframe {
-      font-style: italic;
-      color: #666;
-      margin-bottom: 10px;
-    }
-    /* Progress Bar */
-    .progress-container {
-      width: 100%;
-      background: #eee;
-      border-radius: 10px;
-      margin: 15px 0;
-      height: 22px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #6a11cb, #2575fc);
-      border-radius: 10px;
-      transition: width 0.4s ease;
-    }
-    #progress-text {
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    /* Checkboxes */
-    label {
-      display: block;
-      margin: 6px 0;
-      font-size: 15px;
-    }
-    input[type="checkbox"] {
-      transform: scale(1.2);
-      margin-right: 6px;
-    }
-    /* Info buttons */
-    .info {
-      margin-left: 6px;
-      cursor: pointer;
-      color: #007bff;
-    }
+
+    /* accessibility */
+    .sr-only{position:absolute;left:-9999px}
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <h1>Home Tracker</h1>
-    <ul>
-      <li onclick="showSection('finance-prep', this)" class="active">Finance Prep</li>
-      <li onclick="showSection('mortgage', this)">Mortgage</li>
-      <li onclick="showSection('viewing-offer', this)">Viewing & Offer</li>
-      <li onclick="showSection('solicitor', this)">Solicitor</li>
-      <li onclick="showSection('completion', this)">Completion</li>
-      <li onclick="showSection('renovation', this)">Renovation</li>
-    </ul>
+  <div class="app">
+    <header>
+      <h1>Home-Buying Budget Tracker</h1>
+      <div class="controls">
+        <label for="budget">Total budget (£)</label>
+        <input id="budget" type="number" min="0" step="100" value="200000">
+        <button id="reset">Reset</button>
+        <button id="export">Export JSON</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0;font-size:16px">Allocate funds</h2>
+          <div style="font-size:13px;color:var(--muted)">Drag the dials — totals always match budget</div>
+        </div>
+
+        <div class="sliders" id="sliders"></div>
+      </section>
+
+      <aside class="card summary">
+        <div class="totals">
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Budget</div>
+            <div style="font-weight:700;font-size:20px" id="budgetDisplay">£200,000.00</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;color:var(--muted)">Allocated</div>
+            <div style="font-weight:700;font-size:20px" id="allocatedDisplay">£200,000.00</div>
+          </div>
+        </div>
+
+        <div class="pie" id="pieArea">
+          <svg id="pie" width="180" height="180" viewBox="0 0 32 32"></svg>
+        </div>
+
+        <div class="list" id="list"></div>
+
+        <div class="footer">
+          <button id="equalize">Evenly split</button>
+          <button class="primary" id="commit">Lock allocations</button>
+        </div>
+      </aside>
+    </div>
+
+    <p style="margin-top:12px;color:var(--muted);font-size:13px">Categories: kitchen, bathroom, bedrooms, flooring, walls, other</p>
   </div>
 
-  <!-- Main Content -->
-  <div id="main">
-    <!-- Overall Progress -->
-    <h2>Overall Progress</h2>
-    <div id="progress-text">0 tasks completed, 0 left to go</div>
-    <div class="progress-container">
-      <div id="overall-progress" class="progress-bar"></div>
-    </div>
+<script>
+const categories = ["kitchen","bathroom","bedrooms","flooring","walls","other"];
+const slidersEl = document.getElementById('sliders');
+const budgetInput = document.getElementById('budget');
+const budgetDisplay = document.getElementById('budgetDisplay');
+const allocatedDisplay = document.getElementById('allocatedDisplay');
+const listEl = document.getElementById('list');
+const pieSvg = document.getElementById('pie');
+let percents = [], locked=false;
 
-    <!-- Finance Prep -->
-    <div id="finance-prep" class="section active">
-      <h2>Finance Prep</h2>
-      <div class="timeframe">Target: August–September 2025</div>
-      <label><input type="checkbox" id="task1" onchange="tickTask(this)"> Review finances (deposit, debts, spending)<span class="info" onclick="alert('Make sure your 10% deposit is either in savings or a gifted deposit letter, and tidy up debts to improve your mortgage chances.')">(i)</span></label>
-      <label><input type="checkbox" id="task2" onchange="tickTask(this)"> Check credit reports<span class="info" onclick="alert('Order your credit reports from Experian, Equifax, or TransUnion to ensure accuracy.')">(i)</span></label>
-      <label><input type="checkbox" id="task3" onchange="tickTask(this)"> Gather key documents (payslips, P60, bank statements, ID)<span class="info" onclick="alert('Lenders and solicitors will need proof of income, ID, and bank statements covering several months.')">(i)</span></label>
-      <label><input type="checkbox" id="task4" onchange="tickTask(this)"> Research mortgage advisors<span class="info" onclick="alert('Shortlist independent advisors or brokers who can find the best deals for you.')">(i)</span></label>
-    </div>
+function fmt(n){return '£' + n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 
-    <!-- Mortgage -->
-    <div id="mortgage" class="section">
-      <h2>Mortgage</h2>
-      <div class="timeframe">Target: October 2025</div>
-      <label><input type="checkbox" id="task5" onchange="tickTask(this)"> Engage a mortgage advisor<span class="info" onclick="alert('An advisor will help you understand how much you can borrow and recommend lenders.')">(i)</span></label>
-      <label><input type="checkbox" id="task6" onchange="tickTask(this)"> Obtain Agreement in Principle (AIP)<span class="info" onclick="alert('An AIP shows sellers and estate agents that you’re serious and mortgage-ready. It usually lasts ~90 days.')">(i)</span></label>
-    </div>
+function init(){
+  // start with equal distribution
+  const equal = 100 / categories.length;
+  percents = categories.map(()=>equal);
+  renderSliders();
+  renderAll();
+}
 
-    <!-- Viewing & Offer -->
-    <div id="viewing-offer" class="section">
-      <h2>Viewing & Offer</h2>
-      <div class="timeframe">Target: November–December 2025</div>
-      <label><input type="checkbox" id="task7" onchange="tickTask(this)"> Start viewing properties<span class="info" onclick="alert('Book viewings with estate agents and take notes/photos to compare options.')">(i)</span></label>
-      <label><input type="checkbox" id="task8" onchange="tickTask(this)"> Make an offer<span class="info" onclick="alert('When you find the right home, make a formal offer through the estate agent.')">(i)</span></label>
-    </div>
+function renderSliders(){
+  slidersEl.innerHTML='';
+  categories.forEach((cat,i)=>{
+    const f = document.createElement('div'); f.className='fader card';
+    f.innerHTML = `
+      <label for="s${i}">${cat}</label>
+      <input type="range" id="s${i}" min="0" max="100" step="0.1" value="${percents[i].toFixed(2)}">
+      <div class="value"><div><strong id="p${i}">${percents[i].toFixed(1)}%</strong></div><div style="font-size:13px;color:var(--muted)" id="a${i}\"></div></div>
+    `;
+    slidersEl.appendChild(f);
+    const input = f.querySelector('input');
+    input.addEventListener('input', e=>onSliderInput(i, parseFloat(e.target.value)));
+    input.addEventListener('change', e=>onSliderChange(i, parseFloat(e.target.value)));
+  });
+}
 
-    <!-- Solicitor -->
-    <div id="solicitor" class="section">
-      <h2>Solicitor / Conveyancing</h2>
-      <div class="timeframe">Target: December 2025 – January 2026</div>
-      <label><input type="checkbox" id="task9" onchange="tickTask(this)"> Instruct a solicitor/conveyancer<span class="info" onclick="alert('Your solicitor will handle the legal side: searches, contracts, and transfer of ownership.')">(i)</span></label>
-      <label><input type="checkbox" id="task10" onchange="tickTask(this)"> Survey & property searches<span class="info" onclick="alert('Arrange a HomeBuyer’s Report or full structural survey. Solicitors will conduct local authority searches.')">(i)</span></label>
-      <label><input type="checkbox" id="task11" onchange="tickTask(this)"> Mortgage application submitted<span class="info" onclick="alert('Once your offer is accepted, your mortgage advisor submits the full application.')">(i)</span></label>
-      <label><input type="checkbox" id="task12" onchange="tickTask(this)"> Mortgage approved & valuation<span class="info" onclick="alert('Lender confirms the property value and issues a formal mortgage offer.')">(i)</span></label>
-    </div>
+function onSliderInput(index,newPct){
+  if(locked) return;
+  redistribute(index,newPct);
+  renderAll();
+}
 
-    <!-- Completion -->
-    <div id="completion" class="section">
-      <h2>Completion</h2>
-      <div class="timeframe">Target: February 2026</div>
-      <label><input type="checkbox" id="task13" onchange="tickTask(this)"> Exchange contracts & pay deposit<span class="info" onclick="alert('Legally binding exchange usually happens ~2 weeks before completion. 10% deposit is transferred to solicitor.')">(i)</span></label>
-      <label><input type="checkbox" id="task14" onchange="tickTask(this)"> Arrange buildings insurance<span class="info" onclick="alert('Required from exchange onwards to protect the property.')">(i)</span></label>
-      <label><input type="checkbox" id="task15" onchange="tickTask(this)"> Completion day – collect keys 🎉<span class="info" onclick="alert('Solicitor transfers funds, you officially own the home, and get the keys!')">(i)</span></label>
-      <label><input type="checkbox" id="task16" onchange="tickTask(this)"> Move belongings into new home<span class="info" onclick="alert('Book removals or hire a van. Take meter readings on move day.')">(i)</span></label>
-      <label><input type="checkbox" id="task17" onchange="tickTask(this)"> Change locks<span class="info" onclick="alert('For peace of mind, replace locks as you don’t know who might have old keys.')">(i)</span></label>
-    </div>
+function onSliderChange(index,newPct){
+  // snap to 1 decimal maybe
+  redistribute(index,Math.round(newPct*10)/10);
+  renderAll();
+}
 
-    <!-- Renovation -->
-    <div id="renovation" class="section">
-      <h2>Renovation</h2>
-      <div class="timeframe">Target: February–March 2026</div>
-      <label><input type="checkbox" id="task18" onchange="tickTask(this)"> Painting & wallpapering<span class="info" onclick="alert('Freshen up walls and ceilings before moving all furniture in.')">(i)</span></label>
-      <label><input type="checkbox" id="task19" onchange="tickTask(this)"> Lay new flooring<span class="info" onclick="alert('Install carpets, laminate, or tiles while rooms are still clear.')">(i)</span></label>
-      <label><input type="checkbox" id="task20" onchange="tickTask(this)"> Fit new kitchen & appliances<span class="info" onclick="alert('If required, replace kitchen units and install major appliances.')">(i)</span></label>
-      <label><input type="checkbox" id="task21" onchange="tickTask(this)"> Install electric shower<span class="info" onclick="alert('Hire a qualified electrician/plumber to fit a new shower.')">(i)</span></label>
-    </div>
-  </div>
+function redistribute(index,newPct){
+  newPct = Math.max(0, Math.min(100, newPct));
+  const prev = percents[index];
+  if(Math.abs(newPct - prev) < 1e-6) return;
+  const othersPrevSum = 100 - prev;
+  const remaining = Math.max(0, 100 - newPct);
+  if(othersPrevSum > 0){
+    // scale others proportionally so their sum becomes `remaining`
+    const scale = remaining / othersPrevSum;
+    percents = percents.map((v,i)=> i===index ? newPct : (v*scale));
+  } else {
+    // all others were zero; distribute remaining equally
+    const each = remaining / (percents.length -1);
+    percents = percents.map((v,i)=> i===index ? newPct : each);
+  }
+  // fix tiny numerical rounding issues by normalizing to 100
+  normalizePercents();
+}
 
-  <script>
-    function showSection(id, el) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+function normalizePercents(){
+  let sum = percents.reduce((a,b)=>a+b,0);
+  if(Math.abs(sum - 100) > 1e-8){
+    percents = percents.map(p => p * (100 / sum));
+  }
+}
 
-      document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
-      el.classList.add('active');
-    }
+function renderAll(){
+  const budget = parseFloat(budgetInput.value) || 0;
+  budgetDisplay.textContent = fmt(budget);
+  // update sliders values and amounts
+  percents.forEach((p,i)=>{
+    const input = document.getElementById('s'+i);
+    if(input){ input.value = p.toFixed(2); }
+    document.getElementById('p'+i).textContent = p.toFixed(1) + '%';
+    const amt = budget * p / 100;
+    document.getElementById('a'+i).textContent = fmt(amt);
+  });
 
-    function tickTask(box) {
-      const taskId = box.id;
-      if (box.checked) {
-        alert('🎉 Great job! Another step closer!');
-        localStorage.setItem(taskId, 'true');
-      } else {
-        localStorage.removeItem(taskId);
-      }
-      updateOverallProgress();
-    }
+  // update list
+  listEl.innerHTML = '';
+  let allocated = 0;
+  percents.forEach((p,i)=>{
+    const amt = budget * p / 100;
+    allocated += amt;
+    const row = document.createElement('div'); row.className='row';
+    row.innerHTML = `<div><strong>${categories[i]}</strong><div style='font-size:12px;color:var(--muted)'>${p.toFixed(1)}%</div></div><div style='text-align:right'><div><strong>${fmt(amt)}</strong></div><small>${p.toFixed(1)}%</small></div>`;
+    listEl.appendChild(row);
+  });
+  allocatedDisplay.textContent = fmt(allocated);
+  drawPie();
+}
 
-    window.onload = function() {
-      document.querySelectorAll('input[type="checkbox"]').forEach(box => {
-        if (localStorage.getItem(box.id) === 'true') {
-          box.checked = true;
-        }
-      });
-      updateOverallProgress();
-    };
+function drawPie(){
+  // simple pie using stroke-dasharray on circle (donut)
+  const radi = 16; // viewbox 0..32
+  pieSvg.innerHTML = '';
+  let start = 0;
+  const colors = ['#06b6d4','#7dd3fc','#60a5fa','#34d399','#f59e0b','#f472b6'];
+  percents.forEach((p,i)=>{
+    if(p<=0.0001) return;
+    const portion = p/100;
+    const dash = portion * 31.4159; // 2*pi*r where r=5? we'll scale differently
+    // We'll create arcs using circle stroke technique on same circle sized to 32 viewBox
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('r','10.5');
+    circle.setAttribute('cx','16');
+    circle.setAttribute('cy','16');
+    circle.setAttribute('fill','transparent');
+    circle.setAttribute('stroke',colors[i%colors.length]);
+    circle.setAttribute('stroke-width','7');
+    circle.setAttribute('stroke-dasharray', (portion*66).toString() + ' 66');
+    circle.setAttribute('transform','rotate(-90 16 16)');
+    circle.setAttribute('stroke-dashoffset', (-start*66).toString());
+    pieSvg.appendChild(circle);
+    start += portion;
+  });
+}
 
-    function updateOverallProgress() {
-      const allTasks = document.querySelectorAll('input[type="checkbox"]');
-      const completed = Array.from(allTasks).filter(box => box.checked).length;
-      const remaining = allTasks.length - completed;
-      const percent = (completed / allTasks.length) * 100;
-      document.getElementById('overall-progress').style.width = percent + "%";
-      document.getElementById('progress-text').innerText = `${completed} tasks completed, ${remaining} left to go`;
-    }
-  </script>
+budgetInput.addEventListener('change',()=>{
+  // when total budget changes, amounts update but percentages remain
+  renderAll();
+});
+
+document.getElementById('reset').addEventListener('click',()=>{
+  const equal = 100 / categories.length;
+  percents = categories.map(()=>equal);
+  budgetInput.value = 200000;
+  renderAll();
+});
+
+document.getElementById('equalize').addEventListener('click',()=>{
+  const equal = 100 / categories.length;
+  percents = categories.map(()=>equal);
+  renderAll();
+});
+
+document.getElementById('commit').addEventListener('click', ()=>{
+  locked = !locked;
+  document.getElementById('commit').textContent = locked ? 'Unlock allocations' : 'Lock allocations';
+  document.getElementById('commit').classList.toggle('primary', locked);
+});
+
+document.getElementById('export').addEventListener('click', ()=>{
+  const budget = parseFloat(budgetInput.value) || 0;
+  const out = categories.map((c,i)=>({category:c,percent:parseFloat(percents[i].toFixed(3)),amount:parseFloat((budget*percents[i]/100).toFixed(2))}));
+  const dataStr = JSON.stringify({budget,out},null,2);
+  const blob = new Blob([dataStr],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'budget-allocations.json'; a.click(); URL.revokeObjectURL(url);
+});
+
+// initialize
+init();
+</script>
 </body>
 </html>
