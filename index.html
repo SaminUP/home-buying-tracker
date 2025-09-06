@@ -140,7 +140,59 @@
   </div>
 
 <script>
-// (JavaScript to handle budget logic and storage goes here)
+const budgetInput = document.getElementById('budget');
+const budgetDisplay = document.getElementById('budgetDisplay');
+const allocatedDisplay = document.getElementById('allocatedDisplay');
+const sliders = document.querySelectorAll('.fader');
+const equalizeBtn = document.getElementById('equalize');
+
+let totalBudget = parseFloat(budgetInput.value);
+
+function updateDisplays(){
+  let allocated = 0;
+  sliders.forEach(slider => {
+    const range = slider.querySelector('input[type=range]');
+    const percent = parseFloat(range.value);
+    const amount = totalBudget * percent/100;
+    slider.querySelector('.percent').textContent = percent.toFixed(0)+"%";
+    slider.querySelector('.amount').textContent = "£"+amount.toFixed(2);
+    allocated += amount;
+  });
+  budgetDisplay.textContent = `£${totalBudget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  allocatedDisplay.textContent = `£${allocated.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+}
+
+sliders.forEach(slider => {
+  const range = slider.querySelector('input[type=range]');
+  range.addEventListener('input', e => {
+    // adjust others if not locked
+    const others = Array.from(sliders).filter(s => s!==slider && !s.querySelector('.lock').checked);
+    const locked = Array.from(sliders).filter(s => s.querySelector('.lock').checked);
+    const totalPercentLocked = locked.reduce((sum,s)=> sum+parseFloat(s.querySelector('input').value),0);
+    const remainingPercent = 100 - totalPercentLocked - parseFloat(range.value);
+    const perOther = remainingPercent/others.length;
+    others.forEach(s=>{s.querySelector('input').value = perOther;});
+    updateDisplays();
+  });
+});
+
+budgetInput.addEventListener('input', ()=>{
+  totalBudget = parseFloat(budgetInput.value)||0;
+  updateDisplays();
+});
+
+equalizeBtn.addEventListener('click', ()=>{
+  const others = Array.from(sliders);
+  const equal = 100/others.length;
+  others.forEach(s=>{
+    if(!s.querySelector('.lock').checked){
+      s.querySelector('input').value = equal;
+    }
+  });
+  updateDisplays();
+});
+
+updateDisplays();
 </script>
 </body>
 </html>
