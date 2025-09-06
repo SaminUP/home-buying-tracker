@@ -103,7 +103,6 @@
   </div>
 
 <script>
-// unchanged JS logic (same as before)
 const categories = ["kitchen","bathroom","bedrooms","flooring","walls","other"];
 const slidersEl = document.getElementById('sliders');
 const budgetInput = document.getElementById('budget');
@@ -148,7 +147,7 @@ function renderSliders(){
       <div class="lock-container"><label><input type="checkbox" id="lock${i}" ${locks[i] ? 'checked' : ''}> Lock</label></div>
     `;
     slidersEl.appendChild(f);
-    const input = f.querySelector('input[type=range]');
+    const input = f.querySelector(`#s${i}`);
     input.addEventListener('input', e=>onSliderInput(i, parseFloat(e.target.value)));
     input.addEventListener('change', e=>onSliderChange(i, parseFloat(e.target.value)));
     const lockbox = f.querySelector(`#lock${i}`);
@@ -159,7 +158,87 @@ function renderSliders(){
   });
 }
 
-// other JS functions remain the same (onSliderInput, onSliderChange, redistribute, normalizePercents, renderAll, drawPie, etc.)
+function onSliderInput(index,newPct){
+  if(locked) return;
+  redistribute(index,newPct);
+  renderAll();
+}
+
+function onSliderChange(index,newPct){
+  redistribute(index,Math.round(newPct*10)/10);
+  renderAll();
+}
+
+function redistribute(index,newPct){
+  newPct = Math.max(0, Math.min(100, newPct));
+  const prev = percents[index];
+  if(Math.abs(newPct - prev) < 1e-6) return;
+  const unlockedIdx = percents.map((_,i)=>i).filter(i=>i!==index && !locks[i]);
+  const lockedSum = percents.reduce((a,b,j)=>a+(locks[j]?b:0),0);
+  const available = 100 - lockedSum - newPct;
+  if(unlockedIdx.length>0){
+    const othersPrevSum = unlockedIdx.reduce((a,b)=>a+percents[b],0);
+    unlockedIdx.forEach(j=>{
+      percents[j] = othersPrevSum>0 ? percents[j]/othersPrevSum * available : available/unlockedIdx.length;
+    });
+    percents[index] = newPct;
+  }
+  normalizePercents();
+}
+
+function normalizePercents(){
+  let sum = percents.reduce((a,b)=>a+b,0);
+  if(Math.abs(sum - 100) > 1e-8){
+    percents = percents.map(p => p * (100 / sum));
+  }
+}
+
+function renderAll(){
+  const budget = parseFloat(budgetInput.value) || 0;
+  budgetDisplay.textContent = fmt(budget);
+  percents.forEach((p,i)=>{
+    const input = document.getElementById('s'+i);
+    if(input){ input.value = p.toFixed(2); }
+    document.getElementById('p'+i).textContent = p.toFixed(1) + '%';
+    const amt = budget * p / 100;
+    document.getElementById('a'+i).textContent = fmt(amt);
+  });
+
+  listEl.innerHTML = '';
+  let allocated = 0;
+  percents.forEach((p,i)=>{
+    const amt = budget * p / 100;
+    allocated += amt;
+    const row = document.createElement('div'); row.className='row';
+    row.innerHTML = `<div><strong>${categories[i]}</strong><div style='font-size:12px;color:var(--muted)'>${p.toFixed(1)}%</div></div><div style='text-align:right'><div><strong>${fmt(amt)}</strong></div><small>${p.toFixed(1)}%</small></div>`;
+    listEl.appendChild(row);
+  });
+  allocatedDisplay.textContent = fmt(allocated);
+  drawPie();
+  save();
+}
+
+function drawPie(){
+  pieSvg.innerHTML = '';
+  let start = 0;
+  const colors = ['#06b6d4','#7dd3fc','#60a5fa','#34d399','#f59e0b','#f472b6'];
+  percents.forEach((p,i)=>{
+    if(p<=0.0001) return;
+    const portion = p/100;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('r','10.5');
+    circle.setAttribute('cx','16');
+    circle.setAttribute('cy','16');
+    circle.setAttribute('fill','transparent');
+    circle.setAttribute('stroke',colors[i%colors.length]);
+    circle.setAttribute('stroke-width','7');
+    circle.setAttribute('stroke-dasharray', (portion*66).toString() + ' 66');
+    circle.setAttribute('transform','rotate(-90 16 16)');
+    circle.setAttribute('stroke-dashoffset', (-start*66).toString());
+    pieSvg.appendChild(circle);
+    start += portion;
+  });
+}
 
 budgetInput.addEventListener('change',()=>{
   renderAll();
