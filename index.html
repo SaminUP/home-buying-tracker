@@ -146,11 +146,13 @@ const budgetDisplay = document.getElementById('budgetDisplay');
 const allocatedDisplay = document.getElementById('allocatedDisplay');
 const sliders = document.querySelectorAll('.fader');
 const equalizeBtn = document.getElementById('equalize');
+const pie = document.getElementById('pie');
 
 let totalBudget = parseFloat(budgetInput.value);
 
 function updateDisplays(){
   let allocated = 0;
+  let values = [];
   sliders.forEach(slider => {
     const range = slider.querySelector('input[type=range]');
     const percent = parseFloat(range.value);
@@ -158,15 +160,40 @@ function updateDisplays(){
     slider.querySelector('.percent').textContent = percent.toFixed(0)+"%";
     slider.querySelector('.amount').textContent = "£"+amount.toFixed(2);
     allocated += amount;
+    values.push(percent);
   });
   budgetDisplay.textContent = `£${totalBudget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
   allocatedDisplay.textContent = `£${allocated.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+  drawPie(values);
+}
+
+function drawPie(values){
+  pie.innerHTML = '';
+  let cumulative = 0;
+  values.forEach((val,i)=>{
+    const [startX,startY] = getCoordinatesForPercent(cumulative);
+    cumulative += val/100;
+    const [endX,endY] = getCoordinatesForPercent(cumulative);
+    const largeArcFlag = val/100 > 0.5 ? 1 : 0;
+    const pathData = [
+      `M ${startX} ${startY}`,
+      `A 16 16 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+      'L 0 0'
+    ].join(' ');
+    const color = `hsl(${i*60},70%,50%)`;
+    pie.innerHTML += `<path d="${pathData}" fill="${color}"></path>`;
+  });
+}
+
+function getCoordinatesForPercent(percent){
+  const x = Math.cos(2 * Math.PI * percent) * 16;
+  const y = Math.sin(2 * Math.PI * percent) * 16;
+  return [x,y];
 }
 
 sliders.forEach(slider => {
   const range = slider.querySelector('input[type=range]');
   range.addEventListener('input', e => {
-    // adjust others if not locked
     const others = Array.from(sliders).filter(s => s!==slider && !s.querySelector('.lock').checked);
     const locked = Array.from(sliders).filter(s => s.querySelector('.lock').checked);
     const totalPercentLocked = locked.reduce((sum,s)=> sum+parseFloat(s.querySelector('input').value),0);
