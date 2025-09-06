@@ -46,7 +46,8 @@
 
     @media (max-width:900px){
       .layout{grid-template-columns:1fr;}
-      .sliders{overflow-x:auto;padding-bottom:8px}
+      .sliders{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;justify-items:center}
+      .fader{width:100px}
     }
 
     .sr-only{position:absolute;left:-9999px}
