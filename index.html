@@ -34,7 +34,8 @@
     /* meter */
     .summary{display:flex;flex-direction:column;gap:12px}
     .totals{display:flex;justify-content:space-between;align-items:center}
-    .pie{height:200px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center}
+    .pie{height:220px;display:flex;align-items:center;justify-content:center}
+    .pie svg{transform:rotate(-90deg)}
 
     .list{display:grid;gap:8px}
     .list .row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:var(--glass)}
@@ -125,7 +126,7 @@
         </div>
 
         <div class="pie" id="pieArea">
-          <svg id="pie" width="180" height="180" viewBox="0 0 32 32"></svg>
+          <svg id="pie" width="200" height="200" viewBox="-16 -16 32 32"></svg>
         </div>
 
         <div class="list" id="list"></div>
@@ -176,9 +177,10 @@ function drawPie(values){
     const [endX,endY] = getCoordinatesForPercent(cumulative);
     const largeArcFlag = val/100 > 0.5 ? 1 : 0;
     const pathData = [
-      `M ${startX} ${startY}`,
+      `M 0 0`,
+      `L ${startX} ${startY}`,
       `A 16 16 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-      'L 0 0'
+      'Z'
     ].join(' ');
     const color = `hsl(${i*60},70%,50%)`;
     pie.innerHTML += `<path d="${pathData}" fill="${color}"></path>`;
