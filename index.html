@@ -17,7 +17,6 @@
 
     .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
 
-    /* sliders area */
     .sliders{display:flex;gap:48px;align-items:flex-end;justify-content:center;padding:20px;flex-wrap:wrap}
     .fader{width:120px;display:flex;flex-direction:column;align-items:center;gap:12px}
     .fader label{font-size:14px;text-align:center;font-weight:600;margin-bottom:6px}
@@ -25,13 +24,11 @@
     .lock-container{margin-top:8px;}
     .lock-container label{font-size:12px;color:var(--muted)}
 
-    /* make horizontal range look vertical */
     input[type=range]{appearance:none;width:90px;height:6px;transform:rotate(-90deg);margin:20px 0;padding:0}
     input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#0ea5e9 0%, #06b6d4 100%)}
     input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid rgba(0,0,0,0.2);transform:translateY(-6px)}
     input[type=range]:focus{outline:none}
 
-    /* meter */
     .summary{display:flex;flex-direction:column;gap:12px}
     .totals{display:flex;justify-content:space-between;align-items:center}
     .pie{height:220px;display:flex;align-items:center;justify-content:center}
@@ -77,37 +74,37 @@
           <div class="fader" data-category="kitchen">
             <label>Kitchen</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="bathroom">
             <label>Bathroom</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="bedrooms">
             <label>Bedrooms</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="flooring">
             <label>Flooring</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="walls">
             <label>Walls</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="other">
             <label>Other</label>
             <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
-            <input type="range" min="0" max="100" value="0">
+            <input type="range" min="0" max="10000" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
         </div>
@@ -138,9 +135,6 @@
       </aside>
     </div>
 
-    <p style="margin-top:12px;color:var(--muted);font-size:13px">Categories: kitchen, bathroom, bedrooms, flooring, walls, other</p>
-  </div>
-
 <script>
 const budgetInput = document.getElementById('budget');
 const budgetDisplay = document.getElementById('budgetDisplay');
@@ -153,35 +147,37 @@ let totalBudget = parseFloat(budgetInput.value);
 
 function updateDisplays(){
   let allocated = 0;
-  let values = [];
   sliders.forEach(slider => {
     const range = slider.querySelector('input[type=range]');
-    const percent = parseFloat(range.value);
-    const amount = totalBudget * percent/100;
+    const amount = parseFloat(range.value);
+    allocated += amount;
+  });
+
+  sliders.forEach(slider => {
+    const range = slider.querySelector('input[type=range]');
+    const amount = parseFloat(range.value);
+    const percent = allocated ? (amount / allocated * 100) : 0;
     slider.querySelector('.percent').textContent = percent.toFixed(0)+"%";
     slider.querySelector('.amount').textContent = "£"+amount.toFixed(2);
-    allocated += amount;
-    values.push(percent);
   });
+
   budgetDisplay.textContent = `£${totalBudget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
   allocatedDisplay.textContent = `£${allocated.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  drawPie(values);
+  drawPie();
 }
 
-function drawPie(values){
+function drawPie(){
   pie.innerHTML = '';
+  let allocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
   let cumulative = 0;
-  values.forEach((val,i)=>{
+  sliders.forEach((slider,i)=>{
+    const val = parseFloat(slider.querySelector('input').value);
+    const fraction = allocated ? val/allocated : 0;
     const [startX,startY] = getCoordinatesForPercent(cumulative);
-    cumulative += val/100;
+    cumulative += fraction;
     const [endX,endY] = getCoordinatesForPercent(cumulative);
-    const largeArcFlag = val/100 > 0.5 ? 1 : 0;
-    const pathData = [
-      `M 0 0`,
-      `L ${startX} ${startY}`,
-      `A 16 16 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-      'Z'
-    ].join(' ');
+    const largeArcFlag = fraction > 0.5 ? 1 : 0;
+    const pathData = [`M 0 0`,`L ${startX} ${startY}`,`A 16 16 0 ${largeArcFlag} 1 ${endX} ${endY}`,'Z'].join(' ');
     const color = `hsl(${i*60},70%,50%)`;
     pie.innerHTML += `<path d="${pathData}" fill="${color}"></path>`;
   });
@@ -193,35 +189,41 @@ function getCoordinatesForPercent(percent){
   return [x,y];
 }
 
+function updateMaxValues(){
+  let totalAllocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
+  sliders.forEach(slider => {
+    if(!slider.querySelector('.lock').checked){
+      let currentValue = parseFloat(slider.querySelector('input').value);
+      slider.querySelector('input').max = currentValue + (totalBudget - totalAllocated);
+    }
+  });
+}
+
 sliders.forEach(slider => {
   const range = slider.querySelector('input[type=range]');
   range.addEventListener('input', e => {
-    const others = Array.from(sliders).filter(s => s!==slider && !s.querySelector('.lock').checked);
-    const locked = Array.from(sliders).filter(s => s.querySelector('.lock').checked);
-    const totalPercentLocked = locked.reduce((sum,s)=> sum+parseFloat(s.querySelector('input').value),0);
-    const remainingPercent = 100 - totalPercentLocked - parseFloat(range.value);
-    const perOther = remainingPercent/others.length;
-    others.forEach(s=>{s.querySelector('input').value = perOther;});
+    if(range.value > parseFloat(range.max)) range.value = parseFloat(range.max);
+    updateMaxValues();
     updateDisplays();
   });
 });
 
 budgetInput.addEventListener('input', ()=>{
   totalBudget = parseFloat(budgetInput.value)||0;
+  updateMaxValues();
   updateDisplays();
 });
 
 equalizeBtn.addEventListener('click', ()=>{
-  const others = Array.from(sliders);
-  const equal = 100/others.length;
-  others.forEach(s=>{
-    if(!s.querySelector('.lock').checked){
-      s.querySelector('input').value = equal;
-    }
-  });
+  const unlocked = Array.from(sliders).filter(s=>!s.querySelector('.lock').checked);
+  let remaining = totalBudget - Array.from(sliders).filter(s=>s.querySelector('.lock').checked).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
+  let split = remaining/unlocked.length;
+  unlocked.forEach(s=>{s.querySelector('input').value = split;});
+  updateMaxValues();
   updateDisplays();
 });
 
+updateMaxValues();
 updateDisplays();
 </script>
 </body>
