@@ -19,9 +19,11 @@
 
     /* sliders area */
     .sliders{display:flex;gap:18px;align-items:end;justify-content:center;padding:12px}
-    .fader{width:86px;display:flex;flex-direction:column;align-items:center}
-    .fader label{font-size:13px;margin-bottom:10px;text-align:center;color:var(--muted)}
-    .fader .value{margin-top:10px;font-weight:600}
+    .fader{width:110px;display:flex;flex-direction:column;align-items:center}
+    .fader label{font-size:14px;margin-bottom:8px;text-align:center;font-weight:600}
+    .fader .value{margin-top:8px;font-weight:600;text-align:center}
+    .lock-container{margin-top:6px;}
+    .lock-container label{font-size:12px;color:var(--muted)}
 
     /* make horizontal range look vertical */
     input[type=range]{appearance:none;width:180px;height:6px;transform:rotate(-90deg);margin:0;padding:0}
@@ -47,7 +49,6 @@
       .sliders{overflow-x:auto;padding-bottom:8px}
     }
 
-    /* accessibility */
     .sr-only{position:absolute;left:-9999px}
   </style>
 </head>
@@ -57,7 +58,7 @@
       <h1>Home-Buying Budget Tracker</h1>
       <div class="controls">
         <label for="budget">Total budget (£)</label>
-        <input id="budget" type="number" min="0" step="100" value="200000">
+        <input id="budget" type="number" min="0" step="100" value="10000">
         <button id="reset">Reset</button>
         <button id="export">Export JSON</button>
       </div>
@@ -77,11 +78,11 @@
         <div class="totals">
           <div>
             <div style="font-size:13px;color:var(--muted)">Budget</div>
-            <div style="font-weight:700;font-size:20px" id="budgetDisplay">£200,000.00</div>
+            <div style="font-weight:700;font-size:20px" id="budgetDisplay">£10,000.00</div>
           </div>
           <div style="text-align:right">
             <div style="font-size:13px;color:var(--muted)">Allocated</div>
-            <div style="font-weight:700;font-size:20px" id="allocatedDisplay">£200,000.00</div>
+            <div style="font-weight:700;font-size:20px" id="allocatedDisplay">£10,000.00</div>
           </div>
         </div>
 
@@ -110,13 +111,21 @@ const allocatedDisplay = document.getElementById('allocatedDisplay');
 const listEl = document.getElementById('list');
 const pieSvg = document.getElementById('pie');
 let percents = [], locked=false;
+let locks = categories.map(()=>false);
 
 function fmt(n){return '£' + n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 
 function init(){
-  // start with equal distribution
-  const equal = 100 / categories.length;
-  percents = categories.map(()=>equal);
+  const saved = localStorage.getItem('budget-tracker');
+  if(saved){
+    const data = JSON.parse(saved);
+    percents = data.percents;
+    budgetInput.value = data.budget;
+    locks = data.locks || categories.map(()=>false);
+  } else {
+    const equal = 100 / categories.length;
+    percents = categories.map(()=>equal);
+  }
   renderSliders();
   renderAll();
 }
@@ -125,15 +134,25 @@ function renderSliders(){
   slidersEl.innerHTML='';
   categories.forEach((cat,i)=>{
     const f = document.createElement('div'); f.className='fader card';
+    const amt = parseFloat(budgetInput.value) * percents[i] / 100;
     f.innerHTML = `
       <label for="s${i}">${cat}</label>
+      <div class="value">
+        <div><strong id="p${i}">${percents[i].toFixed(1)}%</strong></div>
+        <div style="font-size:13px;color:var(--muted)" id="a${i}">${fmt(amt)}</div>
+      </div>
       <input type="range" id="s${i}" min="0" max="100" step="0.1" value="${percents[i].toFixed(2)}">
-      <div class="value"><div><strong id="p${i}">${percents[i].toFixed(1)}%</strong></div><div style="font-size:13px;color:var(--muted)" id="a${i}\"></div></div>
+      <div class="lock-container"><label><input type="checkbox" id="lock${i}" ${locks[i] ? 'checked' : ''}> Lock</label></div>
     `;
     slidersEl.appendChild(f);
-    const input = f.querySelector('input');
+    const input = f.querySelector('input[type=range]');
     input.addEventListener('input', e=>onSliderInput(i, parseFloat(e.target.value)));
     input.addEventListener('change', e=>onSliderChange(i, parseFloat(e.target.value)));
+    const lockbox = f.querySelector(`#lock${i}`);
+    lockbox.addEventListener('change', e=>{
+      locks[i] = e.target.checked;
+      save();
+    });
   });
 }
 
@@ -144,7 +163,6 @@ function onSliderInput(index,newPct){
 }
 
 function onSliderChange(index,newPct){
-  // snap to 1 decimal maybe
   redistribute(index,Math.round(newPct*10)/10);
   renderAll();
 }
@@ -153,18 +171,16 @@ function redistribute(index,newPct){
   newPct = Math.max(0, Math.min(100, newPct));
   const prev = percents[index];
   if(Math.abs(newPct - prev) < 1e-6) return;
-  const othersPrevSum = 100 - prev;
-  const remaining = Math.max(0, 100 - newPct);
-  if(othersPrevSum > 0){
-    // scale others proportionally so their sum becomes `remaining`
-    const scale = remaining / othersPrevSum;
-    percents = percents.map((v,i)=> i===index ? newPct : (v*scale));
-  } else {
-    // all others were zero; distribute remaining equally
-    const each = remaining / (percents.length -1);
-    percents = percents.map((v,i)=> i===index ? newPct : each);
+  const unlockedIdx = percents.map((_,i)=>i).filter(i=>i!==index && !locks[i]);
+  const lockedSum = percents.reduce((a,b,j)=>a+(locks[j]?b:0),0);
+  const available = 100 - lockedSum - newPct;
+  if(unlockedIdx.length>0){
+    const othersPrevSum = unlockedIdx.reduce((a,b)=>a+percents[b],0);
+    unlockedIdx.forEach(j=>{
+      percents[j] = othersPrevSum>0 ? percents[j]/othersPrevSum * available : available/unlockedIdx.length;
+    });
+    percents[index] = newPct;
   }
-  // fix tiny numerical rounding issues by normalizing to 100
   normalizePercents();
 }
 
@@ -178,7 +194,6 @@ function normalizePercents(){
 function renderAll(){
   const budget = parseFloat(budgetInput.value) || 0;
   budgetDisplay.textContent = fmt(budget);
-  // update sliders values and amounts
   percents.forEach((p,i)=>{
     const input = document.getElementById('s'+i);
     if(input){ input.value = p.toFixed(2); }
@@ -187,7 +202,6 @@ function renderAll(){
     document.getElementById('a'+i).textContent = fmt(amt);
   });
 
-  // update list
   listEl.innerHTML = '';
   let allocated = 0;
   percents.forEach((p,i)=>{
@@ -199,19 +213,16 @@ function renderAll(){
   });
   allocatedDisplay.textContent = fmt(allocated);
   drawPie();
+  save();
 }
 
 function drawPie(){
-  // simple pie using stroke-dasharray on circle (donut)
-  const radi = 16; // viewbox 0..32
   pieSvg.innerHTML = '';
   let start = 0;
   const colors = ['#06b6d4','#7dd3fc','#60a5fa','#34d399','#f59e0b','#f472b6'];
   percents.forEach((p,i)=>{
     if(p<=0.0001) return;
     const portion = p/100;
-    const dash = portion * 31.4159; // 2*pi*r where r=5? we'll scale differently
-    // We'll create arcs using circle stroke technique on same circle sized to 32 viewBox
     const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
     circle.setAttribute('r','10.5');
     circle.setAttribute('cx','16');
@@ -228,14 +239,15 @@ function drawPie(){
 }
 
 budgetInput.addEventListener('change',()=>{
-  // when total budget changes, amounts update but percentages remain
   renderAll();
 });
 
 document.getElementById('reset').addEventListener('click',()=>{
   const equal = 100 / categories.length;
   percents = categories.map(()=>equal);
-  budgetInput.value = 200000;
+  budgetInput.value = 10000;
+  locks = categories.map(()=>false);
+  renderSliders();
   renderAll();
 });
 
@@ -253,14 +265,18 @@ document.getElementById('commit').addEventListener('click', ()=>{
 
 document.getElementById('export').addEventListener('click', ()=>{
   const budget = parseFloat(budgetInput.value) || 0;
-  const out = categories.map((c,i)=>({category:c,percent:parseFloat(percents[i].toFixed(3)),amount:parseFloat((budget*percents[i]/100).toFixed(2))}));
+  const out = categories.map((c,i)=>({category:c,percent:parseFloat(percents[i].toFixed(3)),amount:parseFloat((budget*percents[i]/100).toFixed(2)),locked:locks[i]}));
   const dataStr = JSON.stringify({budget,out},null,2);
   const blob = new Blob([dataStr],{type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = 'budget-allocations.json'; a.click(); URL.revokeObjectURL(url);
 });
 
-// initialize
+function save(){
+  const budget = parseFloat(budgetInput.value) || 0;
+  localStorage.setItem('budget-tracker', JSON.stringify({budget,percents,locks}));
+}
+
 init();
 </script>
 </body>
