@@ -18,15 +18,15 @@
     .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
 
     /* sliders area */
-    .sliders{display:flex;gap:18px;align-items:end;justify-content:center;padding:12px}
-    .fader{width:110px;display:flex;flex-direction:column;align-items:center}
-    .fader label{font-size:14px;margin-bottom:8px;text-align:center;font-weight:600}
-    .fader .value{margin-top:8px;font-weight:600;text-align:center}
+    .sliders{display:flex;gap:28px;align-items:flex-start;justify-content:center;padding:20px;flex-wrap:wrap}
+    .fader{width:120px;display:flex;flex-direction:column;align-items:center;gap:8px}
+    .fader label{font-size:14px;text-align:center;font-weight:600;margin-bottom:4px}
+    .fader .value{font-weight:600;text-align:center}
     .lock-container{margin-top:6px;}
     .lock-container label{font-size:12px;color:var(--muted)}
 
     /* make horizontal range look vertical */
-    input[type=range]{appearance:none;width:180px;height:6px;transform:rotate(-90deg);margin:0;padding:0}
+    input[type=range]{appearance:none;width:200px;height:6px;transform:rotate(-90deg);margin:12px 0;padding:0}
     input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#0ea5e9 0%, #06b6d4 100%)}
     input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid rgba(0,0,0,0.2);transform:translateY(-6px)}
     input[type=range]:focus{outline:none}
@@ -103,6 +103,7 @@
   </div>
 
 <script>
+// same JS logic from previous version (unchanged)
 const categories = ["kitchen","bathroom","bedrooms","flooring","walls","other"];
 const slidersEl = document.getElementById('sliders');
 const budgetInput = document.getElementById('budget');
