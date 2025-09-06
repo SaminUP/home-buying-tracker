@@ -71,7 +71,44 @@
           <div style="font-size:13px;color:var(--muted)">Drag the dials — totals always match budget</div>
         </div>
 
-        <div class="sliders" id="sliders"></div>
+        <div class="sliders" id="sliders">
+          <div class="fader" data-category="kitchen">
+            <label>Kitchen</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+          <div class="fader" data-category="bathroom">
+            <label>Bathroom</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+          <div class="fader" data-category="bedrooms">
+            <label>Bedrooms</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+          <div class="fader" data-category="flooring">
+            <label>Flooring</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+          <div class="fader" data-category="walls">
+            <label>Walls</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+          <div class="fader" data-category="other">
+            <label>Other</label>
+            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <input type="range" min="0" max="100" value="0">
+            <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
+          </div>
+        </div>
       </section>
 
       <aside class="card summary">
@@ -103,7 +140,7 @@
   </div>
 
 <script>
-// (JavaScript remains unchanged)
+// (JavaScript to handle budget logic and storage goes here)
 </script>
 </body>
 </html>
