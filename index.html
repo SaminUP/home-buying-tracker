@@ -12,7 +12,7 @@
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px}
     header h1{font-size:20px;margin:0}
     .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    input[type=number]{width:170px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    input[type=number]{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
     .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
 
     .layout{display:grid;grid-template-columns:1fr 420px;gap:18px}
@@ -20,7 +20,9 @@
     .sliders{display:flex;gap:48px;align-items:flex-end;justify-content:center;padding:20px;flex-wrap:wrap}
     .fader{width:120px;display:flex;flex-direction:column;align-items:center;gap:12px}
     .fader label{font-size:14px;text-align:center;font-weight:600;margin-bottom:6px}
-    .fader .value{font-weight:600;text-align:center;line-height:1.4;margin-bottom:8px}
+    .fader .percent{font-weight:600;text-align:center;line-height:1.4;margin-bottom:4px}
+    .fader .amountInput{width:80px;text-align:center;font-weight:600;background:transparent;border:none;color:inherit;font-size:14px}
+    .fader .amountInput:hover{background:rgba(255,255,255,0.08);cursor:text;border-radius:4px}
     .lock-container{margin-top:8px;}
     .lock-container label{font-size:12px;color:var(--muted)}
 
@@ -67,43 +69,49 @@
       <section class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <h2 style="margin:0;font-size:16px">Allocate funds</h2>
-          <div style="font-size:13px;color:var(--muted)">Drag the dials — totals always match budget</div>
+          <div style="font-size:13px;color:var(--muted)">Drag the dials or edit amounts — totals always match budget</div>
         </div>
 
         <div class="sliders" id="sliders">
           <div class="fader" data-category="kitchen">
             <label>Kitchen</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="bathroom">
             <label>Bathroom</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="bedrooms">
             <label>Bedrooms</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="flooring">
             <label>Flooring</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="walls">
             <label>Walls</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
           <div class="fader" data-category="other">
             <label>Other</label>
-            <div class="value"><span class="percent">0%</span><br><span class="amount">£0</span></div>
+            <div class="percent">0%</div>
+            <input class="amountInput" type="number" min="0" step="10" value="0">
             <input type="range" min="0" max="10000" step="10" value="0">
             <div class="lock-container"><label><input type="checkbox" class="lock"> Lock</label></div>
           </div>
@@ -145,12 +153,42 @@ const pie = document.getElementById('pie');
 
 let totalBudget = parseFloat(budgetInput.value);
 
+function saveState(){
+  const state = {
+    totalBudget,
+    sliders: Array.from(sliders).map(s=>({
+      category:s.dataset.category,
+      value: parseFloat(s.querySelector('input[type=range]').value),
+      locked: s.querySelector('.lock').checked
+    }))
+  };
+  localStorage.setItem('budgetState', JSON.stringify(state));
+}
+
+function loadState(){
+  const state = JSON.parse(localStorage.getItem('budgetState'));
+  if(state){
+    totalBudget = state.totalBudget;
+    budgetInput.value = totalBudget;
+    state.sliders.forEach(saved=>{
+      const s = document.querySelector(`.fader[data-category="${saved.category}"]`);
+      if(s){
+        s.querySelector('input[type=range]').value = saved.value;
+        s.querySelector('.amountInput').value = saved.value;
+        s.querySelector('.lock').checked = saved.locked;
+      }
+    });
+  }
+}
+
 function updateDisplays(){
   let allocated = 0;
   sliders.forEach(slider => {
     const range = slider.querySelector('input[type=range]');
+    const amountInput = slider.querySelector('.amountInput');
     const amount = parseFloat(range.value);
     allocated += amount;
+    amountInput.value = amount;
   });
 
   sliders.forEach(slider => {
@@ -158,20 +196,20 @@ function updateDisplays(){
     const amount = parseFloat(range.value);
     const percent = allocated ? (amount / allocated * 100) : 0;
     slider.querySelector('.percent').textContent = percent.toFixed(0)+"%";
-    slider.querySelector('.amount').textContent = "£"+amount.toFixed(2);
   });
 
   budgetDisplay.textContent = `£${totalBudget.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
   allocatedDisplay.textContent = `£${allocated.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`;
   drawPie();
+  saveState();
 }
 
 function drawPie(){
   pie.innerHTML = '';
-  let allocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
+  let allocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input[type=range]').value),0);
   let cumulative = 0;
   sliders.forEach((slider,i)=>{
-    const val = parseFloat(slider.querySelector('input').value);
+    const val = parseFloat(slider.querySelector('input[type=range]').value);
     const fraction = allocated ? val/allocated : 0;
     const [startX,startY] = getCoordinatesForPercent(cumulative);
     cumulative += fraction;
@@ -190,18 +228,28 @@ function getCoordinatesForPercent(percent){
 }
 
 function updateMaxValues(){
-  let totalAllocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
+  let totalAllocated = Array.from(sliders).reduce((sum,s)=>sum+parseFloat(s.querySelector('input[type=range]').value),0);
   sliders.forEach(slider => {
     if(!slider.querySelector('.lock').checked){
-      let currentValue = parseFloat(slider.querySelector('input').value);
-      slider.querySelector('input').max = currentValue + (totalBudget - totalAllocated);
+      let currentValue = parseFloat(slider.querySelector('input[type=range]').value);
+      slider.querySelector('input[type=range]').max = currentValue + (totalBudget - totalAllocated);
     }
   });
 }
 
 sliders.forEach(slider => {
   const range = slider.querySelector('input[type=range]');
-  range.addEventListener('input', e => {
+  const amountInput = slider.querySelector('.amountInput');
+
+  range.addEventListener('input', ()=>{
+    amountInput.value = range.value;
+    if(range.value > parseFloat(range.max)) range.value = parseFloat(range.max);
+    updateMaxValues();
+    updateDisplays();
+  });
+
+  amountInput.addEventListener('input', ()=>{
+    range.value = amountInput.value;
     if(range.value > parseFloat(range.max)) range.value = parseFloat(range.max);
     updateMaxValues();
     updateDisplays();
@@ -216,13 +264,17 @@ budgetInput.addEventListener('input', ()=>{
 
 equalizeBtn.addEventListener('click', ()=>{
   const unlocked = Array.from(sliders).filter(s=>!s.querySelector('.lock').checked);
-  let remaining = totalBudget - Array.from(sliders).filter(s=>s.querySelector('.lock').checked).reduce((sum,s)=>sum+parseFloat(s.querySelector('input').value),0);
+  let remaining = totalBudget - Array.from(sliders).filter(s=>s.querySelector('.lock').checked).reduce((sum,s)=>sum+parseFloat(s.querySelector('input[type=range]').value),0);
   let split = remaining/unlocked.length;
-  unlocked.forEach(s=>{s.querySelector('input').value = split;});
+  unlocked.forEach(s=>{
+    s.querySelector('input[type=range]').value = split;
+    s.querySelector('.amountInput').value = split;
+  });
   updateMaxValues();
   updateDisplays();
 });
 
+loadState();
 updateMaxValues();
 updateDisplays();
 </script>
